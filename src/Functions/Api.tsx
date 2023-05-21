@@ -14,8 +14,8 @@ const resParse = async (res: Response) => {
 }
 
 const checkToken = () => {
-    const tokenAccess = localStorage.getItem("token_access")
     const token_refresh = localStorage.getItem("token_refresh")
+    const tokenAccess = localStorage.getItem("token_access")
     if (!tokenAccess) return "Invalid Token"
 
     const tokenPayload = tokenAccess.split(".")[1]

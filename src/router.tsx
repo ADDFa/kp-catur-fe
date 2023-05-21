@@ -5,11 +5,13 @@ import App, { appLoader } from "./App"
 const Root = lazy(() => import("./Pages/Root"))
 const Dashboard = lazy(() => import("./Pages/Dashboard"))
 const Letter = lazy(() => import("./Pages/Letter"))
-const User = lazy(() => import("./Pages/User"))
 const Setting = lazy(() => import("./Pages/Setting"))
 const CreateLetter = lazy(() => import("./Pages/Letters/CreateLetter"))
 const DetailLetter = lazy(() => import("./Pages/Letters/DetailLetter"))
 const UpdateLetter = lazy(() => import("./Pages/Letters/UpdateLetter"))
+
+const User = lazy(() => import("./Pages/User"))
+const CreateUser = lazy(() => import("./Pages/Users/CreateUser"))
 
 const router = createBrowserRouter([
     {
@@ -50,7 +52,7 @@ const router = createBrowserRouter([
                 )
             },
             {
-                path: "/letter/:type/:id",
+                path: "letter/:type/:id",
                 element: (
                     <Suspense fallback="">
                         <DetailLetter />
@@ -58,7 +60,7 @@ const router = createBrowserRouter([
                 )
             },
             {
-                path: "/letter/:type/:id/edit",
+                path: "letter/:type/:id/edit",
                 element: (
                     <Suspense>
                         <UpdateLetter />
@@ -70,6 +72,14 @@ const router = createBrowserRouter([
                 element: (
                     <Suspense fallback="">
                         <User />
+                    </Suspense>
+                )
+            },
+            {
+                path: "user/create",
+                element: (
+                    <Suspense>
+                        <CreateUser />
                     </Suspense>
                 )
             },

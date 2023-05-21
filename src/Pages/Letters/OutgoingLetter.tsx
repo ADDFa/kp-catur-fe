@@ -18,24 +18,22 @@ const OutgoingLetter = () => {
     return (
         <div className="row w-100">
             <Table letterType="out">
-                {letters &&
-                    letters.map((letter, i) => {
-                        const { letter_type, reference_number, id } =
-                            letter.letter
+                {letters.map((letter, i) => {
+                    const { letter_type, reference_number, id } = letter.letter
 
-                        return (
-                            <TableComponentTr
-                                id={id}
-                                letterNumber={reference_number}
-                                no={++i}
-                                letterType={letter_type}
-                                destination={letter.destination}
-                                key={i}
-                                type="outgoing"
-                                setLetters={setLetters}
-                            />
-                        )
-                    })}
+                    return (
+                        <TableComponentTr
+                            id={id}
+                            letterNumber={reference_number}
+                            no={++i}
+                            letterType={letter_type}
+                            destination={letter.destination}
+                            key={i}
+                            type="outgoing"
+                            setLetters={setLetters}
+                        />
+                    )
+                })}
             </Table>
         </div>
     )

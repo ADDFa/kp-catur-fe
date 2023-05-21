@@ -84,7 +84,7 @@ const CreateLetter = () => {
 
     return (
         <>
-            <h4>Tambah Surat {title}</h4>
+            <h3 className="mb-5">Tambah Surat {title}</h3>
 
             <form onSubmit={save}>
                 {inputs.map((input, i) => (

@@ -1,12 +1,11 @@
-import { Link, useParams, useNavigate } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { Suspense, lazy, useEffect } from "react"
 
 const IncomingLetter = lazy(() => import("./Letters/IncomingLetter"))
 const OutgoingLetter = lazy(() => import("./Letters/OutgoingLetter"))
 
 const Letter = () => {
-    const type = useParams().type
-    const navigate = useNavigate()
+    const { type } = useParams()
 
     const getLinkElement = (href: string) => {
         return document.querySelector(`#outlet [href="${href}"]`)
@@ -29,12 +28,6 @@ const Letter = () => {
         )
     }
 
-    const navigateToCreate = (type: string | undefined) => {
-        if (!type) return
-
-        navigate(`/letter/${type}/create`)
-    }
-
     return (
         <div className="container">
             <div className="d-flex align-items-center mb-5 fs-5 justify-content-between">
@@ -54,12 +47,9 @@ const Letter = () => {
                         Surat Keluar
                     </Link>
                 </div>
-                <button
-                    className="btn btn-primary"
-                    onClick={() => navigateToCreate(type)}
-                >
+                <Link to={`/letter/${type}/create`} className="btn btn-primary">
                     + Tambah Surat
-                </button>
+                </Link>
             </div>
 
             {type === "incoming" && (

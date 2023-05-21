@@ -1,0 +1,3 @@
+interface SearchT {
+    name: string
+}
