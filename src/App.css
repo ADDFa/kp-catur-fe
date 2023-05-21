@@ -1,38 +1,61 @@
-.App {
-  text-align: center;
+#root {
+    min-height: 100vh;
+    overflow: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#content {
+    display: flex;
+    gap: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#sidebar {
+    padding-top: 2rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+#outlet {
+    padding: 2rem;
+    flex: 1;
 }
 
-.App-link {
-  color: #61dafb;
+#sidebar {
+    min-width: 300px;
+    border-right: 1px solid rgb(212, 212, 212);
+    min-height: calc(100vh - 80px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#sidebar ul {
+    list-style: none;
+    width: 100%;
+    padding: 0;
+}
+
+#sidebar ul li {
+    display: flex;
+    gap: 1rem;
+    padding: .4rem 2rem;
+    margin-bottom: .6rem;
+    transition: 200ms;
+    color: #0067E6;
+    opacity: .6;
+}
+
+#sidebar ul li:hover,
+#sidebar .active {
+    cursor: pointer;
+    color: #004599;
+    opacity: 1;
+}
+
+#sidebar svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+#sidebar ul li p {
+    font-size: .9rem;
+    font-weight: 500;
 }
