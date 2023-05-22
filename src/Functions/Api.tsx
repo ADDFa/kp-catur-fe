@@ -34,7 +34,6 @@ const checkToken = () => {
         })
             .then((res) => resParse(res))
             .then((res) => {
-                console.log(res)
                 if (res.ok) {
                     setAuth(res.result.data)
                 } else {

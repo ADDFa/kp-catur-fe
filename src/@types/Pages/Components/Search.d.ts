@@ -1,3 +1,3 @@
 interface SearchT {
-    name: string
+    submited?: React.FormEventHandler<HTMLFormElement>
 }

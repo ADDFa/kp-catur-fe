@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom"
 import { Suspense, lazy } from "react"
 import App, { appLoader } from "./App"
 
+export const BASE_URL = "http://localhost:3000/"
+
 const Root = lazy(() => import("./Pages/Root"))
 const Dashboard = lazy(() => import("./Pages/Dashboard"))
 const Letter = lazy(() => import("./Pages/Letter"))
@@ -92,9 +94,9 @@ const router = createBrowserRouter([
                 )
             }
         ],
-        loader: async () => {
+        loader: async (args) => {
             const root = await import("./Pages/Root")
-            return root.rootLoader()
+            return root.rootLoader(args)
         }
     }
 ])

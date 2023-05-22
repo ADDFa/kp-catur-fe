@@ -1,63 +1,64 @@
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
+import Card from "./Components/Card"
+import handleRequest from "../Functions/HandleRequest"
+import { setSidebarActive } from "./Fractions/Sidebar"
 
 const Dashboard = () => {
+    const [count, setCount] = useState({
+        incoming: 0,
+        outgoing: 0,
+        user: 0
+    })
+    const { user, incoming, outgoing } = count
+
+    const cards: CardT[] = [
+        {
+            title: "Surat Masuk",
+            subTitle: "Jumlah Surat Masuk",
+            href: "/letter/incoming",
+            number: incoming
+        },
+        {
+            title: "Surat Keluar",
+            subTitle: "Jumlah Surat Keluar",
+            href: "/letter/outgoing",
+            linkProps: {
+                onClick: () => setSidebarActive("/letter/incoming")
+            },
+            number: outgoing
+        },
+        {
+            title: "Pengguna",
+            subTitle: "Jumlah Pengguna",
+            href: "/user",
+            number: user
+        }
+    ]
+
+    useEffect(() => {
+        async function getData() {
+            const users = await handleRequest("get", "user")
+            const numberOfLetters = await handleRequest(
+                "get",
+                "number-of-letters"
+            )
+            if (!numberOfLetters || !users) return
+            setCount({
+                user: users.result.data.length,
+                ...numberOfLetters.result.data
+            })
+        }
+
+        getData()
+    }, [])
+
     return (
         <>
             <div className="row gap-3">
-                <div className="card col-md-3">
-                    <div className="card-body">
-                        <h5 className="card-title">Card title</h5>
-                        <h6 className="card-subtitle mb-2 text-body-secondary">
-                            Card subtitle
-                        </h6>
-                        <p className="card-text">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the card's content.
-                        </p>
-                        <Link to="#" className="card-link">
-                            Card link
-                        </Link>
-                        <Link to="#" className="card-link">
-                            Another link
-                        </Link>
-                    </div>
-                </div>
-                <div className="card col-md-3">
-                    <div className="card-body">
-                        <h5 className="card-title">Card title</h5>
-                        <h6 className="card-subtitle mb-2 text-body-secondary">
-                            Card subtitle
-                        </h6>
-                        <p className="card-text">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the card's content.
-                        </p>
-                        <Link to="#" className="card-link">
-                            Card link
-                        </Link>
-                        <Link to="#" className="card-link">
-                            Another link
-                        </Link>
-                    </div>
-                </div>
-                <div className="card col-md-3">
-                    <div className="card-body">
-                        <h5 className="card-title">Card title</h5>
-                        <h6 className="card-subtitle mb-2 text-body-secondary">
-                            Card subtitle
-                        </h6>
-                        <p className="card-text">
-                            Some quick example text to build on the card title
-                            and make up the bulk of the card's content.
-                        </p>
-                        <Link to="#" className="card-link">
-                            Card link
-                        </Link>
-                        <Link to="#" className="card-link">
-                            Another link
-                        </Link>
-                    </div>
-                </div>
+                {count &&
+                    cards.map((card, i) => {
+                        return <Card key={i} {...card} />
+                    })}
             </div>
         </>
     )

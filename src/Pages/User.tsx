@@ -1,33 +1,50 @@
-import { useEffect, useState } from "react"
-import DateFilter from "./Components/DateFilter"
+import { useCallback, useEffect, useState } from "react"
 import Search from "./Components/Search"
 import handleRequest from "../Functions/HandleRequest"
 import TableComponentTr from "./Users/TableComponentTr"
 import toCapitalize from "../Functions/ToCapitalize"
 import { Link } from "react-router-dom"
+import AmountIsDisplay from "./Components/AmountIsDisplay"
 
 const User = () => {
     const [users, setUsers] = useState<UserT[]>([])
+    const [name, setName] = useState<string>()
+    const [take, setTake] = useState<number | string>(5)
+
+    const getUsers = useCallback(async () => {
+        let endpoint = `user?take=${take}`
+        if (name) endpoint += `&name=${name}`
+
+        const res = await handleRequest("get", endpoint)
+        setUsers(res?.result.data)
+    }, [name, take])
 
     useEffect(() => {
-        async function getUsers() {
-            const res = await handleRequest("get", "user")
-            setUsers(res?.result.data)
-        }
-
         getUsers()
-    }, [])
+    }, [getUsers])
+
+    const serachUser = (evt: React.FormEvent<HTMLFormElement>) => {
+        evt.preventDefault()
+        setName(evt.currentTarget.querySelector("input")?.value)
+        getUsers()
+    }
+
+    const takeLimit = (evt: React.FormEvent<HTMLSelectElement>) => {
+        evt.preventDefault()
+        setTake(evt.currentTarget.value)
+        getUsers()
+    }
 
     return (
-        <div className="container">
+        <div className="container h-100">
             <div className="d-flex align-items-center mb-5 fs-5 justify-content-end">
                 <Link to={`/user/create`} className="btn btn-primary">
                     + Tambah Pengguna
                 </Link>
             </div>
             <div className="d-flex align-items-center mb-5 justify-content-between">
-                <DateFilter />
-                <Search />
+                <AmountIsDisplay selected={takeLimit} />
+                <Search submited={serachUser} />
             </div>
             <table className="table">
                 <thead>

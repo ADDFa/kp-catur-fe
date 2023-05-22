@@ -1,15 +1,23 @@
 import { useEffect } from "react"
 import SidebarList from "../Components/SidebarList"
+import { el } from "../../Functions/GetElement"
+
+export const setSidebarActive = (dataNavigate: string) => {
+    let sidebarElement = el(`#sidebar [data-navigate="${dataNavigate}"]`)
+    if (!sidebarElement) {
+        const history = localStorage.getItem("sidebar_history")
+        sidebarElement = el(`#sidebar [data-navigate="${history}"]`)
+    } else {
+        localStorage.setItem("sidebar_history", dataNavigate)
+    }
+
+    el("#sidebar .active")?.classList.remove("active")
+    sidebarElement?.classList.add("active")
+}
 
 const Sidebar = () => {
     useEffect(() => {
-        document
-            .querySelector(
-                `[data-navigate="${
-                    localStorage.getItem("sidebar_active") ?? "/dashboard"
-                }"]`
-            )
-            ?.classList.add("active")
+        setSidebarActive(window.location.pathname)
     }, [])
 
     const list = [

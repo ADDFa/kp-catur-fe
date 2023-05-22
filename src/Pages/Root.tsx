@@ -1,8 +1,14 @@
-import { Outlet, redirect } from "react-router-dom"
+import { LoaderFunctionArgs, Outlet, redirect } from "react-router-dom"
 import Header from "./Fractions/Header"
-import Sidebar from "./Fractions/Sidebar"
+import Sidebar, { setSidebarActive } from "./Fractions/Sidebar"
+import { BASE_URL } from "../router"
 
-export const rootLoader = () => {
+export const rootLoader = (args: LoaderFunctionArgs) => {
+    document.addEventListener("click", () => {
+        setSidebarActive(window.location.pathname)
+    })
+
+    if (BASE_URL === args.request.url) return redirect("/dashboard")
     return localStorage.getItem("token_access") ? null : redirect("/login")
 }
 

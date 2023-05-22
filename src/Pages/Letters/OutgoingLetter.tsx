@@ -1,20 +1,7 @@
-import { useEffect, useState } from "react"
 import Table from "./Table"
 import TableComponentTr from "./TableComponentTr"
-import handleRequest from "../../Functions/HandleRequest"
 
-const OutgoingLetter = () => {
-    const [letters, setLetters] = useState<LetterT[]>([])
-
-    useEffect(() => {
-        async function getLetters() {
-            const res = await handleRequest("get", "letter/outgoing")
-            setLetters(res?.result.data)
-        }
-
-        getLetters()
-    }, [])
-
+const OutgoingLetter = ({ letters, setLetters }: LettersT) => {
     return (
         <div className="row w-100">
             <Table letterType="out">
