@@ -4,6 +4,7 @@ import AmountIsDisplay from "./Components/AmountIsDisplay"
 import DateFilter from "./Components/DateFilter"
 import { el } from "../Functions/GetElement"
 import handleRequest from "../Functions/HandleRequest"
+import Modal from "./Letters/Modal"
 
 const IncomingLetter = lazy(() => import("./Letters/IncomingLetter"))
 const OutgoingLetter = lazy(() => import("./Letters/OutgoingLetter"))
@@ -82,6 +83,7 @@ const Letter = () => {
                     <OutgoingLetter letters={letters} setLetters={setLetters} />
                 </Suspense>
             )}
+            <Modal />
         </div>
     )
 }

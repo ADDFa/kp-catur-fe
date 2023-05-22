@@ -7,7 +7,7 @@ const IncomingLetter = ({ letters, setLetters }: LettersT) => {
             <div className="row w-100">
                 <Table letterType="in">
                     {letters.map((letter, i) => {
-                        const { letter_type, reference_number, id } =
+                        const { letter_type, reference_number, date, id } =
                             letter.letter
 
                         return (
@@ -18,6 +18,7 @@ const IncomingLetter = ({ letters, setLetters }: LettersT) => {
                                 letterType={letter_type}
                                 sender={letter.sender}
                                 key={i}
+                                date={date}
                                 type="incoming"
                                 setLetters={setLetters}
                             />

@@ -11,6 +11,7 @@ namespace Letter {
         letterNumber: string
         letterType: string
         type: "incoming" | "outgoing"
+        date: string
         sender?: string
         destination?: string
     }

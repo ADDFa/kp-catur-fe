@@ -2,7 +2,6 @@ import Toast from "../Components/Toast"
 import { el } from "./GetElement"
 
 const showResponseErrors = (errors: Record<string, string[]>) => {
-    console.log(errors)
     for (const error in errors) {
         const elementError = el(`[name=${error}]`)
         if (!elementError) continue

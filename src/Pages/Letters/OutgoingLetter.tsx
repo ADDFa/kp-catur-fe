@@ -6,7 +6,8 @@ const OutgoingLetter = ({ letters, setLetters }: LettersT) => {
         <div className="row w-100">
             <Table letterType="out">
                 {letters.map((letter, i) => {
-                    const { letter_type, reference_number, id } = letter.letter
+                    const { letter_type, reference_number, id, date } =
+                        letter.letter
 
                     return (
                         <TableComponentTr
@@ -18,6 +19,7 @@ const OutgoingLetter = ({ letters, setLetters }: LettersT) => {
                             key={i}
                             type="outgoing"
                             setLetters={setLetters}
+                            date={date}
                         />
                     )
                 })}
