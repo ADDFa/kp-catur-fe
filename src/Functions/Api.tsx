@@ -1,100 +1,97 @@
 import { setAuth } from "./Auth"
+import { showError } from "./ShowResponseErrors"
 
 const BASE_API = "http://127.0.0.1:8000/api"
 
-const resParse = async (res: Response) => {
-    const { ok, status, statusText } = res
-
-    return {
-        ok,
-        status,
-        statusText,
-        result: await res.json()
-    } as Response
-}
-
-const checkToken = () => {
-    const token_refresh = localStorage.getItem("token_refresh")
-    const tokenAccess = localStorage.getItem("token_access")
-    if (!tokenAccess) return "Invalid Token"
-
-    const tokenPayload = tokenAccess.split(".")[1]
-    const payload = JSON.parse(atob(tokenPayload))
-    const time = Math.floor(new Date().getTime() / 1000) + 10 // 10 detik lebih cepat
-
-    return new Promise<boolean>((resolve, reject) => {
-        if (payload.exp > time) return resolve(true)
-
-        fetch(`${BASE_API}/refresh`, {
-            method: "POST",
-            body: JSON.stringify({ token_refresh }),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-            .then((res) => resParse(res))
-            .then((res) => {
-                if (res.ok) {
-                    setAuth(res.result.data)
-                } else {
-                    return reject(res.statusText)
-                }
-            })
-    })
-}
-
 const fetchingData = async (path: string, init: RequestInit) => {
-    try {
-        await checkToken()
-    } catch (e) {
-        console.error(e)
-    }
-
     return new Promise<Response>((resolve, reject) => {
         fetch(`${BASE_API}/${path}`, init)
-            .then(async (res) => await resParse(res))
-            .then((res) => {
-                if (res.ok) return resolve(res)
-                return reject(res)
+            .then(async (res) => {
+                const { ok, status, statusText } = res
+
+                return {
+                    ok,
+                    status,
+                    statusText,
+                    result: await res.json()
+                } as Response
             })
+            .then((res) => (res.ok ? resolve(res) : reject(res)))
     })
 }
 
-const headers = (headers?: Record<string, string>): RequestInit["headers"] => {
-    return {
-        Authorization: `Bearer ${localStorage.getItem("token_access")}`,
-        ...headers
+export const handleRequest = async (
+    path: string,
+    init: RequestInit
+): Promise<Response> => {
+    try {
+        await checkToken()
+        return fetchingData(path, init)
+    } catch (e) {
+        showError(e as Response)
+        return e as Response
     }
 }
 
-export const get = (path: string) => {
-    return fetchingData(path, {
+const checkToken = async () => {
+    const token_refresh = localStorage.getItem("token_refresh")
+    const token_access = localStorage.getItem("token_access")
+    if (!token_access || !token_refresh) return
+
+    const payload = JSON.parse(atob(token_access.split(".")[1]))
+    const time = Math.floor(new Date().getTime() / 1000) + 10 // 10 detik lebih cepat
+
+    if (payload.exp > time) return
+
+    const res = await fetch(`${BASE_API}/refresh`, {
+        method: "POST",
+        body: JSON.stringify({ token_refresh }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+
+    if (res.ok) {
+        const respose = await res.json()
+        return setAuth(respose.data)
+    }
+
+    console.log("generate token success")
+    localStorage.clear()
+}
+
+export const get = async (path: string) => {
+    return await handleRequest(path, {
         method: "GET",
-        headers: headers()
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token_access")}`
+        }
     })
 }
 
-export const post = (path: string, form?: HTMLFormElement) => {
-    return fetchingData(path, {
+export const post = async (path: string, form?: HTMLFormElement) => {
+    return await handleRequest(path, {
         method: "POST",
-        headers: headers(),
         body: new FormData(form)
     })
 }
 
-export const destroy = (path: string) => {
-    return fetchingData(path, {
-        method: "DELETE",
-        headers: headers()
+export const put = async (path: string, form?: HTMLFormElement) => {
+    return await handleRequest(path, {
+        method: "PUT",
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token_access")}`,
+            "Content-Type": "application/json"
+        }
     })
 }
 
-export const put = (path: string, form?: HTMLFormElement) => {
-    return fetchingData(path, {
-        method: "PUT",
-        headers: headers({
-            "Content-Type": "application/json"
-        }),
-        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+export const destroy = async (path: string) => {
+    return await handleRequest(path, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token_access")}`
+        }
     })
 }

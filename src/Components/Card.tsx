@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const Card = ({ title, subTitle, number, href = "#", linkProps }: CardT) => {
+const Card = ({ linkProps, href, subTitle, title, number }: CardT) => {
     return (
         <div className="card col-md-3">
             <Link

@@ -2,7 +2,6 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import Input from "../../Components/Input"
 import Select from "../../Components/Select"
 import Toast from "../../Components/Toast"
-import handleRequest from "../../Functions/HandleRequest"
 
 const CreateLetter = () => {
     const type = useParams().type
@@ -12,12 +11,12 @@ const CreateLetter = () => {
     const save = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
 
-        const res = await handleRequest(
-            "post",
-            `letter/${type}`,
-            evt.currentTarget
-        )
-        if (!res) return
+        // const res = await handleRequest(
+        //     "post",
+        //     `letter/${type}`,
+        //     evt.currentTarget
+        // )
+        // if (!res) return
 
         Toast.fire({
             icon: "success",
@@ -27,45 +26,6 @@ const CreateLetter = () => {
             navigate(`/letter/${type}`)
         }, 300)
     }
-
-    const inputs: InputT[] = [
-        {
-            input: {
-                type: "text",
-                id: "reference_number",
-                name: "reference_number",
-                placeholder: "107/20/109"
-            },
-            label: "Nomor Surat"
-        },
-        {
-            input: {
-                type: "date",
-                id: "date",
-                name: "date",
-                defaultValue: "2023-05-20"
-            },
-            label: `Tanggal Surat ${title}`
-        },
-        {
-            input: {
-                type: "text",
-                id: "letter_type",
-                name: "letter_type",
-                placeholder: "Surat Permohonan"
-            },
-            label: "Jenis Surat"
-        },
-        {
-            input: {
-                type: "text",
-                id: "regarding",
-                name: "regarding",
-                placeholder: "HUT SMAN 9"
-            },
-            label: "Perihal"
-        }
-    ]
 
     const categories: SelectT.Option[] = [
         {
@@ -87,9 +47,42 @@ const CreateLetter = () => {
             <h3 className="mb-5">Tambah Surat {title}</h3>
 
             <form onSubmit={save}>
-                {inputs.map((input, i) => (
-                    <Input {...input} key={i} />
-                ))}
+                <Input
+                    label="Nomor Surat"
+                    inputAttribute={{
+                        type: "text",
+                        id: "reference_number",
+                        name: "reference_number",
+                        placeholder: "107/20/109"
+                    }}
+                />
+                <Input
+                    label={`Tanggal Surat ${title}`}
+                    inputAttribute={{
+                        type: "date",
+                        id: "date",
+                        name: "date",
+                        defaultValue: "2023-05-20"
+                    }}
+                />
+                <Input
+                    label="Jenis Surat"
+                    inputAttribute={{
+                        type: "text",
+                        id: "letter_type",
+                        name: "letter_type",
+                        placeholder: "Surat Permohonan"
+                    }}
+                />
+                <Input
+                    label="Perihal"
+                    inputAttribute={{
+                        type: "text",
+                        id: "regarding",
+                        name: "regarding",
+                        placeholder: "HUT SMAN 9"
+                    }}
+                />
                 <Select
                     options={categories}
                     label="Kategori Surat"
@@ -100,26 +93,22 @@ const CreateLetter = () => {
                 />
                 {type === "incoming" ? (
                     <Input
-                        {...{
-                            input: {
-                                type: "text",
-                                id: "sender",
-                                name: "sender",
-                                placeholder: "SMAN 9"
-                            },
-                            label: "Pengirim"
+                        label="Pengirim"
+                        inputAttribute={{
+                            type: "text",
+                            id: "sender",
+                            name: "sender",
+                            placeholder: "SMAN 9"
                         }}
                     />
                 ) : (
                     <Input
-                        {...{
-                            input: {
-                                type: "text",
-                                id: "destination",
-                                name: "destination",
-                                placeholder: "Kepala Sekolah SMAN 9"
-                            },
-                            label: "Tujuan"
+                        label="Tujuan"
+                        inputAttribute={{
+                            type: "text",
+                            id: "destination",
+                            name: "destination",
+                            placeholder: "Kepala Sekolah SMAN 9"
                         }}
                     />
                 )}

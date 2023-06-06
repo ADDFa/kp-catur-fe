@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
-import Card from "./Components/Card"
-import handleRequest from "../Functions/HandleRequest"
 import { setSidebarActive } from "./Fractions/Sidebar"
-import Table from "./Dashboard/Table"
+import Card from "../Components/Card"
+import { get } from "../Functions/Api"
 
 const Dashboard = () => {
     const [count, setCount] = useState({
@@ -10,33 +9,9 @@ const Dashboard = () => {
         outgoing: 0,
         user: 0
     })
-    const { user, incoming, outgoing } = count
+
     const [incomingLetters, setIncomingLetters] = useState<LetterT[]>([])
     const [outgoingLetters, setOutgoingLetters] = useState<LetterT[]>([])
-
-    const cards: CardT[] = [
-        {
-            title: "Surat Masuk",
-            subTitle: "Jumlah Surat Masuk",
-            href: "/letter/incoming",
-            number: incoming
-        },
-        {
-            title: "Surat Keluar",
-            subTitle: "Jumlah Surat Keluar",
-            href: "/letter/outgoing",
-            linkProps: {
-                onClick: () => setSidebarActive("/letter/incoming")
-            },
-            number: outgoing
-        },
-        {
-            title: "Pengguna",
-            subTitle: "Jumlah Pengguna",
-            href: "/user",
-            number: user
-        }
-    ]
 
     useEffect(() => {
         const currentDate = new Date()
@@ -45,25 +20,21 @@ const Dashboard = () => {
         }-${currentDate.getDate()}`
 
         async function getData() {
-            const users = await handleRequest("get", "user")
-            const numberOfLetters = await handleRequest(
-                "get",
-                "number-of-letters"
-            )
+            const users = await get("user")
+            const numberOfLetters = await get("number-of-letters")
+
             if (!numberOfLetters || !users) return
             setCount({
                 user: users.result.data.length,
                 ...numberOfLetters.result.data
             })
 
-            const incomingLetters = await handleRequest(
-                "get",
-                `letter/incoming?range=${now}_${now}`
-            )
-            const outGoingLetters = await handleRequest(
-                "get",
-                `letter/outgoing?range=${now}_${now}`
-            )
+            const letterEndpoint = (type: string) =>
+                `letter/outgoing?${type}=${now}_${now}`
+
+            const incomingLetters = await get(letterEndpoint("incoming"))
+            const outGoingLetters = await get(letterEndpoint("outgoing"))
+
             setIncomingLetters(incomingLetters?.result.data)
             setOutgoingLetters(outGoingLetters?.result.data)
         }
@@ -72,28 +43,71 @@ const Dashboard = () => {
     }, [])
 
     return (
-        <>
-            <div className="row gap-3">
-                {cards.map((card, i) => {
-                    return <Card key={i} {...card} />
-                })}
+        <div className="row gap-3">
+            <Card
+                {...{
+                    title: "Surat Masuk",
+                    subTitle: "Jumlah Surat Masuk",
+                    href: "/letter/incoming",
+                    number: count.incoming
+                }}
+            />
+            <Card
+                {...{
+                    title: "Surat Keluar",
+                    subTitle: "Jumlah Surat Keluar",
+                    href: "/letter/outgoing",
+                    linkProps: {
+                        onClick: () => setSidebarActive("/letter/incoming")
+                    },
+                    number: count.outgoing
+                }}
+            />
+            <Card
+                {...{
+                    title: "Pengguna",
+                    subTitle: "Jumlah Pengguna",
+                    href: "/user",
+                    number: count.user
+                }}
+            />
 
-                <div className="mt-5">
-                    <h4 className="mb-5">
-                        Surat Masuk dan Surat Keluar Hari Ini
-                    </h4>
+            <div className="mt-5">
+                <h4 className="mb-5">Surat Masuk dan Surat Keluar Hari Ini</h4>
 
-                    <div className="row justify-content-between">
-                        <div className="col-md-6">
-                            <Table letters={incomingLetters} />
+                <div className="row justify-content-between">
+                    {[incomingLetters, outgoingLetters].map((letters, i) => (
+                        <div className="col-md-6" key={i}>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">No</th>
+                                        <th scope="col">Jenis Surat</th>
+                                        <th scope="col">Nomor Surat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {letters.map((letter, i) => {
+                                        const {
+                                            letter_type,
+                                            reference_number
+                                        } = letter.letter
+
+                                        return (
+                                            <tr key={i}>
+                                                <th scope="row">{++i}</th>
+                                                <td>{letter_type}</td>
+                                                <td>{reference_number}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
                         </div>
-                        <div className="col-md-6">
-                            <Table letters={outgoingLetters} />
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

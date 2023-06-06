@@ -1,6 +1,5 @@
 import ConfirmDialog from "../../Components/ConfirmDialog"
 import Toast from "../../Components/Toast"
-import handleRequest from "../../Functions/HandleRequest"
 import toCapitalize from "../../Functions/ToCapitalize"
 import ButtonAction from "../Letters/ButtonAction"
 
@@ -14,11 +13,11 @@ const TableComponentTr = ({
     const destroyUser = () => {
         ConfirmDialog(
             async () => {
-                const res = await handleRequest("delete", `user/${id}`)
-                const users = await handleRequest("get", "user")
-                if (!res || !users) return
+                // const res = await handleRequest("delete", `user/${id}`)
+                // const users = await handleRequest("get", "user")
+                // if (!res || !users) return
 
-                setUsers(users.result.data)
+                // setUsers(users.result.data)
 
                 Toast.fire({
                     icon: "success",

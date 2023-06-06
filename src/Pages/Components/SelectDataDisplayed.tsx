@@ -1,4 +1,4 @@
-const AmountIsDisplay = ({ selected }: AmountIsDisplayT) => {
+const SelectDataDisplayed = ({ onSelect }: { onSelect: () => any }) => {
     const amounts: number[] = [5, 10, 20, 30, 50, 70, 100]
 
     return (
@@ -7,7 +7,7 @@ const AmountIsDisplay = ({ selected }: AmountIsDisplayT) => {
                 className="form-select"
                 id="amountIsDisplay"
                 aria-label="Tampilkan Data Sebanyak"
-                onInput={selected}
+                onInput={onSelect}
             >
                 {amounts.map((amount, i) => (
                     <option value={amount} key={i}>
@@ -20,4 +20,4 @@ const AmountIsDisplay = ({ selected }: AmountIsDisplayT) => {
     )
 }
 
-export default AmountIsDisplay
+export default SelectDataDisplayed

@@ -1,32 +1,10 @@
 import { Link, useNavigate } from "react-router-dom"
 import Input from "../../Components/Input"
 import Select from "../../Components/Select"
-import handleRequest from "../../Functions/HandleRequest"
 import Toast from "../../Components/Toast"
 
 const CreateUser = () => {
     const navigate = useNavigate()
-
-    const inputs: InputT[] = [
-        {
-            label: "Nama Pengguna",
-            input: {
-                id: "name",
-                name: "name",
-                placeholder: "Pengguna",
-                type: "text"
-            }
-        },
-        {
-            label: "Username",
-            input: {
-                id: "username",
-                name: "username",
-                placeholder: "admin sma 9",
-                type: "text"
-            }
-        }
-    ]
 
     const roleOptions: SelectT.Option[] = [
         {
@@ -46,8 +24,8 @@ const CreateUser = () => {
     const save = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
 
-        const res = await handleRequest("post", "user", evt.currentTarget)
-        if (!res) return
+        // const res = await handleRequest("post", "user", evt.currentTarget)
+        // if (!res) return
 
         Toast.fire({
             icon: "success",
@@ -61,9 +39,25 @@ const CreateUser = () => {
             <h3 className="mb-5">Tambah Data Pengguna</h3>
 
             <form onSubmit={save}>
-                {inputs.map((input, i) => (
-                    <Input key={i} {...input} />
-                ))}
+                <Input
+                    label="Nama Pengguna"
+                    inputAttribute={{
+                        id: "name",
+                        name: "name",
+                        placeholder: "Pengguna",
+                        type: "text"
+                    }}
+                />
+                <Input
+                    label="Username"
+                    inputAttribute={{
+                        id: "username",
+                        name: "username",
+                        placeholder: "admin sma 9",
+                        type: "text"
+                    }}
+                />
+
                 <Select
                     label="Jabatan"
                     selectAttribute={{

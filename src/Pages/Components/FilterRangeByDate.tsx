@@ -1,8 +1,8 @@
-const DateFilter = ({ inputed }: DateFilterT) => {
+const FilterRangeByDate = ({ onInput }: { onInput: () => any }) => {
     return (
         <form
             className="col-md-6 d-flex gap-3 align-items-center"
-            onInput={inputed}
+            onInput={onInput}
         >
             <input
                 className="form-control border-success border-opacity-25"
@@ -19,4 +19,4 @@ const DateFilter = ({ inputed }: DateFilterT) => {
     )
 }
 
-export default DateFilter
+export default FilterRangeByDate

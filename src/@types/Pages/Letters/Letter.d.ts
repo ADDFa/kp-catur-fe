@@ -4,5 +4,8 @@ type LetterTypeT = "incoming" | "outgoing"
 
 interface LettersT {
     letters: LetterT[]
-    setLetters: React.Dispatch<React.SetStateAction<LetterT[]>>
+}
+
+interface LetterContextT {
+    setLetters: React.Dispatch<React.SetStateAction>
 }

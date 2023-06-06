@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
-import handleRequest from "../../Functions/HandleRequest"
 import toCapitalize from "../../Functions/ToCapitalize"
 
 const Ul = ({ children }: DetailLetter.UlT) => {
@@ -23,8 +22,8 @@ const DetailLetter = () => {
 
     useEffect(() => {
         async function getLetter() {
-            const res = await handleRequest("get", `letter/${type}/${id}`)
-            setLetter(res?.result.data)
+            // const res = await handleRequest("get", `letter/${type}/${id}`)
+            // setLetter(res?.result.data)
         }
 
         getLetter()

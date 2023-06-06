@@ -1,4 +1,4 @@
-const Input = ({ label, input, text }: InputT) => {
+const Input = ({ label, inputAttribute, text }: InputT) => {
     const removeInvalid = (evt: React.ChangeEvent<HTMLInputElement>) => {
         const inputClass = evt.currentTarget.classList
         if (inputClass.contains("is-invalid")) inputClass.remove("is-invalid")
@@ -6,22 +6,22 @@ const Input = ({ label, input, text }: InputT) => {
 
     return (
         <div className="mb-3">
-            <label htmlFor={input.id} className="form-label">
+            <label htmlFor={inputAttribute.id} className="form-label">
                 {label}
             </label>
             <input
-                {...input}
+                {...inputAttribute}
                 className="form-control"
-                aria-describedby={`${input.id}Help`}
+                aria-describedby={`${inputAttribute.id}Help`}
                 onChange={removeInvalid}
             />
             {text && (
-                <div id={`${input.id}Help`} className="form-text">
+                <div id={`${inputAttribute.id}Help`} className="form-text">
                     {text}
                 </div>
             )}
             <p
-                id={`${input.id}Feedback`}
+                id={`${inputAttribute.id}Feedback`}
                 className="invalid-feedback d-none"
             ></p>
         </div>

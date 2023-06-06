@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import Search from "./Components/Search"
-import handleRequest from "../Functions/HandleRequest"
 import TableComponentTr from "./Users/TableComponentTr"
 import toCapitalize from "../Functions/ToCapitalize"
 import { Link } from "react-router-dom"
-import AmountIsDisplay from "./Components/AmountIsDisplay"
 
 const User = () => {
     const [users, setUsers] = useState<UserT[]>([])
@@ -15,8 +13,8 @@ const User = () => {
         let endpoint = `user?take=${take}`
         if (name) endpoint += `&name=${name}`
 
-        const res = await handleRequest("get", endpoint)
-        setUsers(res?.result.data)
+        // const res = await handleRequest("get", endpoint)
+        // setUsers(res?.result.data)
     }, [name, take])
 
     useEffect(() => {
@@ -43,7 +41,6 @@ const User = () => {
                 </Link>
             </div>
             <div className="d-flex align-items-center mb-5 justify-content-between">
-                <AmountIsDisplay selected={takeLimit} />
                 <Search submited={serachUser} />
             </div>
             <table className="table">

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom"
 import { Suspense, lazy } from "react"
-import App, { appLoader } from "./App"
+import { App, appLoader } from "./App"
 
 export const BASE_URL = "http://localhost:3000/"
 
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     {
         path: "/",
         element: (
-            <Suspense fallback={""}>
+            <Suspense>
                 <Root />
             </Suspense>
         ),
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
             {
                 path: "dashboard",
                 element: (
-                    <Suspense fallback={""}>
+                    <Suspense>
                         <Dashboard />
                     </Suspense>
                 )
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
             {
                 path: "letter/:type",
                 element: (
-                    <Suspense fallback={""}>
+                    <Suspense>
                         <Letter />
                     </Suspense>
                 )

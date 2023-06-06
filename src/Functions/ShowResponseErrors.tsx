@@ -24,7 +24,7 @@ const showErrorMessage = (message: string) => {
 }
 
 export const showError = (error: Response) => {
-    if (!error.result) return console.error(error)
+    if (!error.result) return console.log(error)
     if ("errors" in error.result) return showResponseErrors(error.result.errors)
     if ("message" in error.result) return showErrorMessage(error.result.message)
 }

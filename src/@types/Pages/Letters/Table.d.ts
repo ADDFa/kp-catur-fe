@@ -14,5 +14,6 @@ namespace Letter {
         date: string
         sender?: string
         destination?: string
+        disposition_status?: null | "process" | "finish"
     }
 }

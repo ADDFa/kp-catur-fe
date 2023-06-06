@@ -1,34 +1,15 @@
 import Input from "./Components/Input"
 import { useNavigate, redirect } from "react-router-dom"
-import "./App.css"
 import { setAuth } from "./Functions/Auth"
-import handleRequest from "./Functions/HandleRequest"
+import "./App.css"
+import { post } from "./Functions/Api"
 
 export const appLoader = () => {
     return localStorage.getItem("token_access") ? redirect("/dashboard") : null
 }
 
-const App = () => {
+export const App = () => {
     const navigate = useNavigate()
-
-    const inputs: InputT[] = [
-        {
-            label: "Username",
-            input: {
-                type: "text",
-                id: "username",
-                name: "username"
-            }
-        },
-        {
-            label: "Password",
-            input: {
-                type: "password",
-                id: "password",
-                name: "password"
-            }
-        }
-    ]
 
     const login = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
@@ -37,13 +18,11 @@ const App = () => {
         style.transition = "100ms"
         style.opacity = ".7"
 
-        const res = await handleRequest("post", "login", evt.currentTarget)
-        if (res) {
-            setAuth(res.result.data)
-            navigate("/dashboard")
-        }
+        const res = await post("login", evt.currentTarget)
+        if (!res) return (style.opacity = "1")
 
-        style.opacity = "1"
+        setAuth(res.result.data)
+        navigate("/dashboard")
     }
 
     return (
@@ -52,9 +31,22 @@ const App = () => {
                 <h4 className="fw-bold mt-3 mb-5 text-center">
                     SMAN 9 Kota Bengkulu
                 </h4>
-                {inputs.map((input, i) => (
-                    <Input key={i} {...input} />
-                ))}
+                <Input
+                    label="Username"
+                    inputAttribute={{
+                        type: "text",
+                        id: "username",
+                        name: "username"
+                    }}
+                />
+                <Input
+                    label="Password"
+                    inputAttribute={{
+                        type: "password",
+                        id: "password",
+                        name: "password"
+                    }}
+                />
                 <button
                     type="submit"
                     className="btn btn-primary rounded w-100 rounded-5 my-5"
@@ -65,5 +57,3 @@ const App = () => {
         </div>
     )
 }
-
-export default App

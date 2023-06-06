@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
-import handleRequest from "../../Functions/HandleRequest"
 import Input from "../../Components/Input"
 import Select from "../../Components/Select"
 import Toast from "../../Components/Toast"
@@ -9,45 +8,6 @@ const UpdateLetter = () => {
     const { type, id } = useParams()
     const [letter, setLetter] = useState<LetterT>()
     const title = type === "incoming" ? "Masuk" : "Keluar"
-
-    const inputs: InputT[] = [
-        {
-            input: {
-                type: "text",
-                id: "reference_number",
-                name: "reference_number",
-                defaultValue: letter?.letter.reference_number
-            },
-            label: "Nomor Surat"
-        },
-        {
-            input: {
-                type: "date",
-                id: "date",
-                name: "date",
-                defaultValue: letter?.letter.date
-            },
-            label: `Tanggal Surat ${title}`
-        },
-        {
-            input: {
-                type: "text",
-                id: "letter_type",
-                name: "letter_type",
-                defaultValue: letter?.letter.letter_type
-            },
-            label: "Jenis Surat"
-        },
-        {
-            input: {
-                type: "text",
-                id: "regarding",
-                name: "regarding",
-                defaultValue: letter?.letter.regarding
-            },
-            label: "Perihal"
-        }
-    ]
 
     const categories: SelectT.Option[] = [
         {
@@ -66,8 +26,8 @@ const UpdateLetter = () => {
 
     useEffect(() => {
         async function getLetter() {
-            const res = await handleRequest("get", `letter/${type}/${id}`)
-            setLetter(res?.result.data)
+            // const res = await handleRequest("get", `letter/${type}/${id}`)
+            // setLetter(res?.result.data)
         }
 
         getLetter()
@@ -76,12 +36,12 @@ const UpdateLetter = () => {
     const save = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
 
-        const res = await handleRequest(
-            "put",
-            `letter/${type}/${id}`,
-            evt.currentTarget
-        )
-        if (!res) return
+        // const res = await handleRequest(
+        //     "put",
+        //     `letter/${type}/${id}`,
+        //     evt.currentTarget
+        // )
+        // if (!res) return
         Toast.fire({
             icon: "success",
             text: "Berhasil mengubah data surat."
@@ -93,9 +53,42 @@ const UpdateLetter = () => {
             <h4>Ubah Surat {title}</h4>
 
             <form onSubmit={save}>
-                {inputs.map((input, i) => (
-                    <Input {...input} key={i} />
-                ))}
+                <Input
+                    label="Nomor Surat"
+                    inputAttribute={{
+                        type: "text",
+                        id: "reference_number",
+                        name: "reference_number",
+                        defaultValue: letter?.letter.reference_number
+                    }}
+                />
+                <Input
+                    label="Tanggal Surat"
+                    inputAttribute={{
+                        type: "date",
+                        id: "date",
+                        name: "date",
+                        defaultValue: letter?.letter.date
+                    }}
+                />
+                <Input
+                    label="Jenis Surat"
+                    inputAttribute={{
+                        type: "text",
+                        id: "letter_type",
+                        name: "letter_type",
+                        defaultValue: letter?.letter.letter_type
+                    }}
+                />
+                <Input
+                    label="Perihal"
+                    inputAttribute={{
+                        type: "text",
+                        id: "regarding",
+                        name: "regarding",
+                        defaultValue: letter?.letter.regarding
+                    }}
+                />
                 <Select
                     options={categories}
                     label="Kategori Surat"
@@ -106,26 +99,22 @@ const UpdateLetter = () => {
                 />
                 {type === "incoming" ? (
                     <Input
-                        {...{
-                            input: {
-                                type: "text",
-                                id: "sender",
-                                name: "sender",
-                                defaultValue: letter?.sender
-                            },
-                            label: "Pengirim"
+                        label="Pengirim"
+                        inputAttribute={{
+                            type: "text",
+                            id: "sender",
+                            name: "sender",
+                            defaultValue: letter?.sender
                         }}
                     />
                 ) : (
                     <Input
-                        {...{
-                            input: {
-                                type: "text",
-                                id: "destination",
-                                name: "destination",
-                                defaultValue: letter?.destination
-                            },
-                            label: "Tujuan"
+                        label="Tujuan"
+                        inputAttribute={{
+                            type: "text",
+                            id: "destination",
+                            name: "destination",
+                            defaultValue: letter?.destination
                         }}
                     />
                 )}
