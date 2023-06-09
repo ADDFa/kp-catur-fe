@@ -1,0 +1,3 @@
+interface ButtonDeleteT {
+    action: () => void
+}

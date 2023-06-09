@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import toCapitalize from "../../Functions/ToCapitalize"
+import { get } from "../../Functions/Api"
 
 const Ul = ({ children }: DetailLetter.UlT) => {
     return <ul className="list-group list-group-flush col">{children}</ul>
@@ -16,14 +17,14 @@ const Li = ({ label, value }: DetailLetter.LiT) => {
 }
 
 const DetailLetter = () => {
-    const [letter, setLetter] = useState<LetterT>()
+    const [letter, setLetter] = useState<ResponseT.DataT>()
     const { type, id } = useParams()
     const title = type === "incoming" ? "Masuk" : "Keluar"
 
     useEffect(() => {
         async function getLetter() {
-            // const res = await handleRequest("get", `letter/${type}/${id}`)
-            // setLetter(res?.result.data)
+            const res = await get(`letter/${type}/${id}`)
+            setLetter(res?.result.data)
         }
 
         getLetter()
@@ -39,25 +40,17 @@ const DetailLetter = () => {
                         <Ul>
                             <Li
                                 label="Nomor Surat"
-                                value={letter.letter.reference_number}
+                                value={letter.letter.number}
                             />
                             <Li
                                 label="Jenis Surat"
-                                value={letter.letter.letter_type}
-                            />
-                            <Li
-                                label="Perihal"
-                                value={letter.letter.regarding}
+                                value={letter.letter.type}
                             />
                         </Ul>
                         <Ul>
                             <Li
-                                label={`Tanggal ${title}`}
-                                value={letter.letter.date}
-                            />
-                            <Li
-                                label="Kategori Surat"
-                                value={toCapitalize(letter.letter.category)}
+                                label="Perihal"
+                                value={letter.letter.regarding}
                             />
                             {type === "incoming" ? (
                                 <Li

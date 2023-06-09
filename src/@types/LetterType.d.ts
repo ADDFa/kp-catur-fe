@@ -1,0 +1,1 @@
+type LetterTypeT = "incoming" | "outgoing"

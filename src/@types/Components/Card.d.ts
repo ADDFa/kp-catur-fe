@@ -1,7 +1,6 @@
-interface CardT {
+interface CardT extends React.HTMLAttributes<HTMLAnchorElement> {
     title: string
     subTitle: string
-    href: string
+    to: string
     number?: number
-    linkProps?: React.HTMLAttributes<HTMLAnchorElement>
 }

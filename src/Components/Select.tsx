@@ -1,19 +1,24 @@
-const Select = ({ selectAttribute, options, label }: SelectT.SelectT) => {
+const Select: React.FC<SelectT> = ({
+    id,
+    label,
+    name,
+    defaultValue,
+    children
+}) => {
     return (
         <div className="mb-3">
-            <label htmlFor={selectAttribute?.id} className="form-label">
+            <label htmlFor={id} className="form-label">
                 {label}
             </label>
             <select
-                className="form-control"
-                aria-label="Default select example"
-                {...selectAttribute}
+                className="form-select"
+                id={id}
+                name={name}
+                aria-label={label}
+                defaultValue={defaultValue}
             >
-                {options.map((option, i) => (
-                    <option key={i} value={option.key}>
-                        {option.value}
-                    </option>
-                ))}
+                <option value={defaultValue}>{defaultValue}</option>
+                {children}
             </select>
         </div>
     )

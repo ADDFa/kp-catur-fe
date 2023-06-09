@@ -4,6 +4,6 @@ namespace User {
         no: number
         name: string
         position: string
-        setUsers: React.Dispatch<React.SetStateAction<UserT[]>>
+        getUser: () => Promise<void>
     }
 }

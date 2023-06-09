@@ -1,6 +1,5 @@
 import Input from "../Components/Input"
 import Toast from "../Components/Toast"
-import { setAuth } from "../Functions/Auth"
 
 const Setting = () => {
     const login = async (form: HTMLFormElement) => {
@@ -33,27 +32,21 @@ const Setting = () => {
             <form onSubmit={save}>
                 <Input
                     label="Username"
-                    inputAttribute={{
-                        id: "username",
-                        name: "username",
-                        type: "text"
-                    }}
+                    id="username"
+                    name="username"
+                    type="text"
                 />
                 <Input
                     label="Password"
-                    inputAttribute={{
-                        id: "password",
-                        name: "password",
-                        type: "password"
-                    }}
+                    id="password"
+                    name="password"
+                    type="password"
                 />
                 <Input
                     label="Password Lama"
-                    inputAttribute={{
-                        id: "old_password",
-                        name: "old_password",
-                        type: "password"
-                    }}
+                    id="old_password"
+                    name="old_password"
+                    type="password"
                 />
 
                 <div className="d-flex justify-content-end mt-5">

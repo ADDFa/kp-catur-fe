@@ -1,65 +1,89 @@
-import { Link, useParams } from "react-router-dom"
 import { useCallback, useEffect, useState } from "react"
-import { el, elAll } from "../Functions/GetElement"
-import Modal from "./Letters/Modal"
-import { get } from "../Functions/Api"
-import SelectDataDisplayed from "./Components/SelectDataDisplayed"
-import FilterRangeByDate from "./Components/FilterRangeByDate"
-import ButtonActions from "./Components/ButtonActions"
+import { destroy, get } from "../Functions/Api"
+import FilterDate from "./Letters/FilterDate"
+import LinkOffsetHover from "../Components/LinkOffsetHover"
+import SelectFloating from "../Components/SelectFloating"
+import ButtonAdd from "../Components/Buttons/ButtonAdd"
+import ButtonEdit from "../Components/Buttons/ButtonEdit"
+import ButtonDetail from "../Components/Buttons/ButtonDetail"
+import ButtonDelete from "../Components/Buttons/ButtonDelete"
+import { useParams } from "react-router-dom"
+import Toast from "../Components/Toast"
 
 const Letter = () => {
-    const [letters, setLetters] = useState<LetterT[]>([])
     const { type } = useParams()
+    const [letters, setLetters] = useState<ResponseT.DataT[]>()
+    const [take, setTake] = useState<number | string>(5)
+    const [before, setBefore] = useState("")
+    const [after, setAfter] = useState("")
 
     const getLetters = useCallback(async () => {
-        const take = (el("#amountIsDisplay") as HTMLSelectElement)?.value
-        const from = (el(`[name="from"]`) as HTMLInputElement)?.value
-        const until = (el(`[name="until"]`) as HTMLInputElement)?.value
+        let path = `letter/${type}?take=${take}`
+        if (before) path += `&before=${before}`
+        if (after) path += `&after=${after}`
 
-        let letterEndpoint = `letter/${type}?take=${take}`
-        if (from && until) letterEndpoint += `&range=${from}_${until}`
-
-        const res = await get(letterEndpoint)
-        setLetters(res.result.data)
-    }, [type])
-
-    const setActive = () => {
-        const currentActive = el(`.letter-link .active`)
-        currentActive?.classList.add("link-underline-opacity-0")
-        currentActive?.classList.remove("active")
-
-        const active = el(`a[href="/letter/${type}"]`)
-        active?.classList.remove("link-underline-opacity-0")
-        active?.classList.add("active")
-    }
+        const res = await get(path)
+        if (res?.ok) setLetters(res.result.data)
+    }, [take, before, after, type])
 
     useEffect(() => {
         getLetters()
-        setActive()
-    }, [type, getLetters])
+    }, [getLetters])
+
+    const changeTake: React.FormEventHandler<HTMLSelectElement> = (evt) => {
+        setTake(evt.currentTarget.value)
+    }
+
+    const deleteLetter = async (id: number) => {
+        const res = await destroy(`letter/${id}`, {
+            key: "as",
+            value: type === "incoming" ? "in" : "out"
+        })
+        if (res?.ok) {
+            Toast.fire({
+                icon: "success",
+                text: "Berhasil menghapus surat"
+            })
+            getLetters()
+        }
+    }
 
     return (
         <div className="container">
             <div className="d-flex align-items-center mb-5 fs-5 justify-content-between">
                 <div className="d-flex align-items-center gap-4 letter-link">
-                    {["Surat Masuk", "Surat Keluar"].map((link, i) => (
-                        <Link
-                            key={i}
-                            className={`link-offset-2 link-underline-opacity-0 link-offset-3-hover text-dark link-underline-dark link-underline-opacity-75-hover`}
-                            to={`/letter/${i === 0 ? "incoming" : "outgoing"}`}
-                        >
-                            {link}
-                        </Link>
-                    ))}
+                    <LinkOffsetHover
+                        to="/letter/incoming"
+                        active={type === "incoming"}
+                    >
+                        Surat Masuk
+                    </LinkOffsetHover>
+                    <LinkOffsetHover
+                        to="/letter/outgoing"
+                        active={type === "outgoing"}
+                    >
+                        Surat Keluar
+                    </LinkOffsetHover>
                 </div>
-                <Link to={`/letter/${type}/create`} className="btn btn-primary">
+                <ButtonAdd to={`/letter/${type}/create`}>
                     + Tambah Surat
-                </Link>
+                </ButtonAdd>
             </div>
 
             <div className="d-flex justify-content-between my-5">
-                <SelectDataDisplayed onSelect={getLetters} />
-                <FilterRangeByDate onInput={getLetters} />
+                <SelectFloating
+                    id="amount-display"
+                    name="amount_display"
+                    label="Tampilkan Sebanyak"
+                    onInput={changeTake}
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                </SelectFloating>
+                <FilterDate setAfter={setAfter} setBefore={setBefore} />
             </div>
 
             <div className="row w-100">
@@ -69,33 +93,60 @@ const Letter = () => {
                             <th scope="col">No</th>
                             <th scope="col">Jenis Surat</th>
                             <th scope="col">Nomor Surat</th>
+                            {type === "incoming" && (
+                                <th scope="col" className="text-center">
+                                    Disposisikan
+                                </th>
+                            )}
                             <th scope="col" className="text-center">
                                 Aksi
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {letters.map((letter, i) => {
-                            const { letter_type, reference_number } =
-                                letter.letter
-
-                            return (
+                        {letters?.map(
+                            (
+                                {
+                                    letter: { type: jenis, number, id },
+                                    disposition_status
+                                },
+                                i
+                            ) => (
                                 <tr key={i}>
-                                    <th scope="row">{++i}</th>
-                                    <td>{letter_type}</td>
-                                    <td>{reference_number}</td>
-                                    <td className="d-flex gap-2 justify-content-center">
-                                        <ButtonActions button="show" />
-                                        <ButtonActions button="edit" />
-                                        <ButtonActions button="delete" />
+                                    <td scope="col">{++i}</td>
+                                    <td>{jenis}</td>
+                                    <td>{number}</td>
+                                    {type === "incoming" && (
+                                        <td className="text-center">
+                                            <button
+                                                className={`btn btn-${
+                                                    disposition_status ===
+                                                    "process"
+                                                        ? "warning"
+                                                        : "success"
+                                                }`}
+                                            >
+                                                <i className="bi bi-send-fill text-light" />
+                                            </button>
+                                        </td>
+                                    )}
+                                    <td className="d-flex justify-content-center gap-2">
+                                        <ButtonEdit
+                                            to={`/letter/${type}/${id}/edit`}
+                                        />
+                                        <ButtonDetail
+                                            to={`/letter/${type}/${id}`}
+                                        />
+                                        <ButtonDelete
+                                            action={() => deleteLetter(id)}
+                                        />
                                     </td>
                                 </tr>
                             )
-                        })}
+                        )}
                     </tbody>
                 </table>
             </div>
-            <Modal />
         </div>
     )
 }

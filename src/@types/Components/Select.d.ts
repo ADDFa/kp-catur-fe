@@ -1,12 +1,7 @@
-namespace SelectT {
-    type Option = {
-        key: string
-        value: string
-    }
-
-    interface SelectT {
-        label: string
-        selectAttribute?: React.SelectHTMLAttributes<HTMLSelectElement>
-        options: Option[]
-    }
+interface SelectT extends React.HTMLAttributes<HTMLSelectElement> {
+    name: string
+    id: string
+    label: string
+    defaultValue?: string
+    children: React.ReactNode
 }

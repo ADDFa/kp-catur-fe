@@ -1,21 +1,27 @@
 import { useCallback, useEffect, useState } from "react"
 import Search from "./Components/Search"
-import TableComponentTr from "./Users/TableComponentTr"
 import toCapitalize from "../Functions/ToCapitalize"
 import { Link } from "react-router-dom"
+import { destroy, get } from "../Functions/Api"
+import SelectFloating from "../Components/SelectFloating"
+import ButtonEdit from "../Components/Buttons/ButtonEdit"
+import ButtonDetail from "../Components/Buttons/ButtonDetail"
+import ButtonDelete from "../Components/Buttons/ButtonDelete"
+import { gi } from "../Functions/GetElement"
+import Toast from "../Components/Toast"
 
 const User = () => {
     const [users, setUsers] = useState<UserT[]>([])
-    const [name, setName] = useState<string>()
+    const [search, setSearch] = useState<string>()
     const [take, setTake] = useState<number | string>(5)
 
     const getUsers = useCallback(async () => {
         let endpoint = `user?take=${take}`
-        if (name) endpoint += `&name=${name}`
+        if (search) endpoint += `&search=${search}`
 
-        // const res = await handleRequest("get", endpoint)
-        // setUsers(res?.result.data)
-    }, [name, take])
+        const res = await get(endpoint)
+        setUsers(res?.result.data)
+    }, [search, take])
 
     useEffect(() => {
         getUsers()
@@ -23,14 +29,32 @@ const User = () => {
 
     const serachUser = (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
-        setName(evt.currentTarget.querySelector("input")?.value)
-        getUsers()
+        const search = gi("search") as HTMLInputElement
+        setSearch(search.value)
     }
 
-    const takeLimit = (evt: React.FormEvent<HTMLSelectElement>) => {
-        evt.preventDefault()
+    const handleSearchInput: React.FormEventHandler<HTMLInputElement> = (
+        evt
+    ) => {
+        const value = evt.currentTarget.value
+        if (value) return
+
+        setSearch("")
+    }
+
+    const changeTake: React.FormEventHandler<HTMLSelectElement> = (evt) => {
         setTake(evt.currentTarget.value)
-        getUsers()
+    }
+
+    const deleteUser = async (id: string | number) => {
+        const res = await destroy(`user/${id}`)
+        if (!res?.ok) return
+
+        await getUsers()
+        Toast.fire({
+            icon: "success",
+            text: "Berhasil menghapus pengguna"
+        })
     }
 
     return (
@@ -41,7 +65,19 @@ const User = () => {
                 </Link>
             </div>
             <div className="d-flex align-items-center mb-5 justify-content-between">
-                <Search submited={serachUser} />
+                <SelectFloating
+                    id="amount-display"
+                    name="amount_display"
+                    label="Tampilkan Sebanyak"
+                    onInput={changeTake}
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                </SelectFloating>
+                <Search submited={serachUser} onInput={handleSearchInput} />
             </div>
             <table className="table">
                 <thead>
@@ -53,15 +89,16 @@ const User = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, i) => (
-                        <TableComponentTr
-                            key={i}
-                            id={user.id}
-                            name={user.name}
-                            no={++i}
-                            position={toCapitalize(user.position.role)}
-                            setUsers={setUsers}
-                        />
+                    {users?.map(({ id, name, role: { role } }, i) => (
+                        <tr key={i}>
+                            <td scope="col">{++i}</td>
+                            <td>{name}</td>
+                            <td>{role}</td>
+                            <td className="d-flex gap-2 justify-content-center">
+                                <ButtonEdit to={`/user/${id}/edit`} />
+                                <ButtonDelete action={() => deleteUser(id)} />
+                            </td>
+                        </tr>
                     ))}
                 </tbody>
             </table>

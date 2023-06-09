@@ -1,4 +1,4 @@
-import { setAuth } from "./Auth"
+import Auth from "./Auth"
 import { showError } from "./ShowResponseErrors"
 
 const BASE_API = "http://127.0.0.1:8000/api"
@@ -8,7 +8,6 @@ const fetchingData = async (path: string, init: RequestInit) => {
         fetch(`${BASE_API}/${path}`, init)
             .then(async (res) => {
                 const { ok, status, statusText } = res
-
                 return {
                     ok,
                     status,
@@ -20,53 +19,64 @@ const fetchingData = async (path: string, init: RequestInit) => {
     })
 }
 
-export const handleRequest = async (
-    path: string,
-    init: RequestInit
-): Promise<Response> => {
+export const handleRequest = async (path: string, init: RequestInit) => {
+    const headers: HeadersInit | undefined = init.headers
+    const allowPath = ["login", "refresh"]
+
     try {
-        await checkToken()
-        return fetchingData(path, init)
+        const isValid: boolean = allowPath.find((allow) => allow === path)
+            ? true
+            : await checkToken()
+
+        if (isValid) {
+            const data = await fetchingData(path, {
+                ...init,
+                headers: {
+                    Authorization: `Bearer ${Auth.token_access}`,
+                    ...headers
+                }
+            })
+
+            return data
+        }
     } catch (e) {
         showError(e as Response)
         return e as Response
     }
 }
 
-const checkToken = async () => {
-    const token_refresh = localStorage.getItem("token_refresh")
-    const token_access = localStorage.getItem("token_access")
-    if (!token_access || !token_refresh) return
+const checkToken = async (): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+        const payload = Auth.payload
+        if (!payload) return reject(false)
 
-    const payload = JSON.parse(atob(token_access.split(".")[1]))
-    const time = Math.floor(new Date().getTime() / 1000) + 10 // 10 detik lebih cepat
+        const now = Math.floor(new Date().getTime() / 1000) + 10 // 10 detik lebih cepat
+        if (payload.exp > now) return resolve(true)
 
-    if (payload.exp > time) return
+        fetch(`${BASE_API}/refresh`, {
+            method: "POST",
+            body: JSON.stringify({ token_refresh: Auth.token_refresh }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(async (res) => {
+                if (res.ok) return await res.json()
 
-    const res = await fetch(`${BASE_API}/refresh`, {
-        method: "POST",
-        body: JSON.stringify({ token_refresh }),
-        headers: {
-            "Content-Type": "application/json"
-        }
+                localStorage.clear()
+                window.location.href = "/"
+                return reject(false)
+            })
+            .then((res) => {
+                Auth.token_access = res.data.token_access
+                Auth.token_refresh = res.data.token_refresh
+                return resolve(true)
+            })
     })
-
-    if (res.ok) {
-        const respose = await res.json()
-        return setAuth(respose.data)
-    }
-
-    console.log("generate token success")
-    localStorage.clear()
 }
 
 export const get = async (path: string) => {
-    return await handleRequest(path, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token_access")}`
-        }
-    })
+    return await handleRequest(path, { method: "GET" })
 }
 
 export const post = async (path: string, form?: HTMLFormElement) => {
@@ -77,21 +87,28 @@ export const post = async (path: string, form?: HTMLFormElement) => {
 }
 
 export const put = async (path: string, form?: HTMLFormElement) => {
+    const body = new FormData(form)
+    body.append("_method", "PUT")
+
     return await handleRequest(path, {
-        method: "PUT",
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token_access")}`,
-            "Content-Type": "application/json"
-        }
+        method: "POST",
+        body
     })
 }
 
-export const destroy = async (path: string) => {
+export const destroy = async (
+    path: string,
+    ...formChild: { key: string; value: string }[]
+) => {
+    const body = new FormData(document.createElement("form"))
+    body.append("_method", "DELETE")
+
+    formChild.map(({ key, value }) => {
+        body.append(key, value)
+    })
+
     return await handleRequest(path, {
-        method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token_access")}`
-        }
+        method: "POST",
+        body
     })
 }

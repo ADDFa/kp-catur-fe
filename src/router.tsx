@@ -11,9 +11,12 @@ const Setting = lazy(() => import("./Pages/Setting"))
 const CreateLetter = lazy(() => import("./Pages/Letters/CreateLetter"))
 const DetailLetter = lazy(() => import("./Pages/Letters/DetailLetter"))
 const UpdateLetter = lazy(() => import("./Pages/Letters/UpdateLetter"))
+const Report = lazy(() => import("./Pages/Report"))
+const PrintReport = lazy(() => import("./Pages/Letters/PrintReport"))
 
 const User = lazy(() => import("./Pages/User"))
 const CreateUser = lazy(() => import("./Pages/Users/CreateUser"))
+const EditUser = lazy(() => import("./Pages/Users/EditUser"))
 
 const router = createBrowserRouter([
     {
@@ -86,6 +89,22 @@ const router = createBrowserRouter([
                 )
             },
             {
+                path: "user/:id/edit",
+                element: (
+                    <Suspense>
+                        <EditUser />
+                    </Suspense>
+                )
+            },
+            {
+                path: "report",
+                element: (
+                    <Suspense>
+                        <Report />
+                    </Suspense>
+                )
+            },
+            {
                 path: "setting",
                 element: (
                     <Suspense fallback="">
@@ -98,6 +117,14 @@ const router = createBrowserRouter([
             const root = await import("./Pages/Root")
             return root.rootLoader(args)
         }
+    },
+    {
+        path: "/report/print",
+        element: (
+            <Suspense>
+                <PrintReport />
+            </Suspense>
+        )
     }
 ])
 

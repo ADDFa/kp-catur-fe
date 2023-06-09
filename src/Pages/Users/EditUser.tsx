@@ -1,14 +1,15 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import Input from "../../Components/Input"
-// import Select from "../../Components/Select"
-import Toast from "../../Components/Toast"
-import { useEffect, useState } from "react"
-import { get, post } from "../../Functions/Api"
 import Select from "../../Components/Select"
+import { useEffect, useState } from "react"
+import { get, put } from "../../Functions/Api"
+import Toast from "../../Components/Toast"
 
-const CreateUser = () => {
-    const navigate = useNavigate()
+const EditUser = () => {
+    const { id } = useParams()
     const [roles, setRoles] = useState<ResponseT.DataT[]>()
+    const [users, setUsers] = useState<ResponseT.DataT>()
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getRoles = async () => {
@@ -16,20 +17,27 @@ const CreateUser = () => {
             if (res?.ok) setRoles(res.result.data)
         }
 
+        const getUser = async () => {
+            const res = await get(`user/${id}`)
+            if (res?.ok) setUsers(res.result.data)
+        }
+
         getRoles()
+        getUser()
     }, [])
 
-    const save = async (evt: React.FormEvent<HTMLFormElement>) => {
+    const save: React.FormEventHandler<HTMLFormElement> = async (evt) => {
         evt.preventDefault()
 
-        const res = await post("user", evt.currentTarget)
+        const res = await put(`user/${id}`, evt.currentTarget)
         if (!res?.ok) return
 
         Toast.fire({
             icon: "success",
-            text: "Berhasil menambahkan pengguna."
+            text: "Berhasil mengupdate pengguna"
         })
-        navigate("/user")
+
+        setTimeout(() => navigate("/user"), 600)
     }
 
     return (
@@ -45,13 +53,7 @@ const CreateUser = () => {
                             name="name"
                             placeholder="Pengguna"
                             type="text"
-                        />
-                        <Input
-                            label="Username"
-                            id="username"
-                            name="username"
-                            placeholder="admin sma 9"
-                            type="text"
+                            defaultValue={users?.name}
                         />
                     </div>
                     <div className="col-md-6">
@@ -67,12 +69,6 @@ const CreateUser = () => {
                                 </option>
                             ))}
                         </Select>
-                        <Input
-                            id="password"
-                            label="Password"
-                            name="password"
-                            type="password"
-                        />
                     </div>
 
                     <div className="d-flex justify-content-end gap-2 mt-5">
@@ -87,4 +83,4 @@ const CreateUser = () => {
     )
 }
 
-export default CreateUser
+export default EditUser

@@ -1,27 +1,24 @@
 import { useEffect, useState } from "react"
-import Select from "../../Components/Select"
 import Input from "../../Components/Input"
 import Toast from "../../Components/Toast"
 import { el } from "../../Functions/GetElement"
 
 const Modal = () => {
-    const [users, setUsers] = useState<SelectT.Option[]>()
+    // const [users, setUsers] = useState<SelectT.Option[]>()
 
     useEffect(() => {
-        const options: SelectT.Option[] = []
+        // const options: SelectT.Option[] = []
 
         async function getUsers() {
             // const res = await handleRequest("get", "user")
             // if (!res) return
-
             // res?.result.data.map((user: Record<string, string>) => {
             //     return options.push({
             //         key: user.id,
             //         value: user.name
             //     })
             // })
-
-            setUsers(options)
+            // setUsers(options)
         }
 
         getUsers()
@@ -86,25 +83,21 @@ const Modal = () => {
                             ></button>
                         </div>
                         <div className="modal-body">
-                            {users && (
+                            {/* {users && (
                                 <>
                                     <Select
                                         label="Pengguna"
-                                        selectAttribute={{
-                                            id: "to",
-                                            name: "to"
-                                        }}
+                                        id="to"
+                                        name="to"
                                         options={users}
                                     />
                                     <Input
                                         label="Pesan Disposisi"
-                                        inputAttribute={{
-                                            name: "message",
-                                            id: "message"
-                                        }}
+                                        name="message"
+                                        id="message"
                                     />
                                 </>
-                            )}
+                            )} */}
                         </div>
                         <div className="modal-footer">
                             <button

@@ -1,110 +1,99 @@
 import { useEffect, useState } from "react"
-import { setSidebarActive } from "./Fractions/Sidebar"
-import Card from "../Components/Card"
+import Card from "./Dashboard/Card"
 import { get } from "../Functions/Api"
+import Table from "./Dashboard/Table"
 
 const Dashboard = () => {
-    const [count, setCount] = useState({
+    const [count, setCount] = useState<CountT>({
         incoming: 0,
         outgoing: 0,
         user: 0
     })
-
-    const [incomingLetters, setIncomingLetters] = useState<LetterT[]>([])
-    const [outgoingLetters, setOutgoingLetters] = useState<LetterT[]>([])
+    const [incomingLetters, setIncomingLetters] = useState<ResponseT.DataT[]>()
+    const [outgoingLetters, setOutgoingLetters] = useState<ResponseT.DataT[]>()
 
     useEffect(() => {
-        const currentDate = new Date()
-        const now = `${currentDate.getFullYear()}-${
-            currentDate.getMonth() + 1
-        }-${currentDate.getDate()}`
+        const dateO = new Date()
+        const year = dateO.getFullYear()
+        const month = dateO.getMonth() + 1
+        const date = dateO.getDate()
+        const now = `${year}-${month}-${date}`
 
-        async function getData() {
-            const users = await get("user")
-            const numberOfLetters = await get("number-of-letters")
+        const getData = async () => {
+            const totalLetter = await get("letter/total")
+            const totalUser = await get("user/total")
+            if (totalLetter?.ok && totalUser?.ok) {
+                const { incoming, outgoing } = totalLetter.result.data
+                const user = totalUser.result.data
+                setCount({
+                    incoming,
+                    outgoing,
+                    user
+                })
+            }
 
-            if (!numberOfLetters || !users) return
-            setCount({
-                user: users.result.data.length,
-                ...numberOfLetters.result.data
-            })
-
-            const letterEndpoint = (type: string) =>
-                `letter/outgoing?${type}=${now}_${now}`
-
-            const incomingLetters = await get(letterEndpoint("incoming"))
-            const outGoingLetters = await get(letterEndpoint("outgoing"))
-
+            const incomingLetters = await get("letter/incoming")
+            const outgoingLetters = await get("letter/outgoing")
             setIncomingLetters(incomingLetters?.result.data)
-            setOutgoingLetters(outGoingLetters?.result.data)
+            setOutgoingLetters(outgoingLetters?.result.data)
         }
 
         getData()
     }, [])
 
+    const cards: CardT[] = [
+        {
+            title: "Surat Masuk",
+            subTitle: "Jumlah Surat Masuk",
+            to: "/letter/incoming",
+            number: count.incoming
+        },
+        {
+            title: "Surat Keluar",
+            subTitle: "Jumlah Surat Keluar",
+            to: "/letter/outgoing",
+            number: count.outgoing
+        },
+        {
+            title: "Pengguna",
+            subTitle: "Jumlah Pengguna",
+            to: "/user",
+            number: count.user
+        }
+    ]
+
     return (
         <div className="row gap-3">
-            <Card
-                {...{
-                    title: "Surat Masuk",
-                    subTitle: "Jumlah Surat Masuk",
-                    href: "/letter/incoming",
-                    number: count.incoming
-                }}
-            />
-            <Card
-                {...{
-                    title: "Surat Keluar",
-                    subTitle: "Jumlah Surat Keluar",
-                    href: "/letter/outgoing",
-                    linkProps: {
-                        onClick: () => setSidebarActive("/letter/incoming")
-                    },
-                    number: count.outgoing
-                }}
-            />
-            <Card
-                {...{
-                    title: "Pengguna",
-                    subTitle: "Jumlah Pengguna",
-                    href: "/user",
-                    number: count.user
-                }}
-            />
+            {cards.map((card, i) => (
+                <Card {...card} key={i}></Card>
+            ))}
 
             <div className="mt-5">
                 <h4 className="mb-5">Surat Masuk dan Surat Keluar Hari Ini</h4>
 
                 <div className="row justify-content-between">
-                    {[incomingLetters, outgoingLetters].map((letters, i) => (
-                        <div className="col-md-6" key={i}>
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">No</th>
-                                        <th scope="col">Jenis Surat</th>
-                                        <th scope="col">Nomor Surat</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {letters.map((letter, i) => {
-                                        const {
-                                            letter_type,
-                                            reference_number
-                                        } = letter.letter
-
-                                        return (
-                                            <tr key={i}>
-                                                <th scope="row">{++i}</th>
-                                                <td>{letter_type}</td>
-                                                <td>{reference_number}</td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    ))}
+                    <Table>
+                        {incomingLetters?.map(
+                            ({ letter: { number, type } }, i) => (
+                                <tr key={i}>
+                                    <td scope="row">{++i}</td>
+                                    <td>{type}</td>
+                                    <td>{number}</td>
+                                </tr>
+                            )
+                        )}
+                    </Table>
+                    <Table>
+                        {outgoingLetters?.map(
+                            ({ letter: { number, type } }, i) => (
+                                <tr key={i}>
+                                    <td scope="row">{++i}</td>
+                                    <td>{type}</td>
+                                    <td>{number}</td>
+                                </tr>
+                            )
+                        )}
+                    </Table>
                 </div>
             </div>
         </div>

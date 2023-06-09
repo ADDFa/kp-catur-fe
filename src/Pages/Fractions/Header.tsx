@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import logo from "../../Assets/logo.png"
 
 const Header = () => {
     const navigate = useNavigate()
@@ -13,17 +14,14 @@ const Header = () => {
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
                 <div className="container-fluid">
                     <div
-                        className="collapse navbar-collapse"
+                        className="collapse navbar-collapse px-4"
                         id="navbarSupportedContent"
                     >
                         <div className="navbar-brand d-flex gap-4 me-auto">
-                            <img
-                                src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg"
-                                alt="Bootstrap"
-                                width="46"
-                                height="40"
-                            />
-                            <p className="my-auto">SMAN 9 Kota Bengkulu</p>
+                            <img src={logo} alt="Bootstrap" width="50" />
+                            <p className="my-auto fw-bold">
+                                SMAN 9 Kota Bengkulu
+                            </p>
                         </div>
                         <button
                             onClick={logout}

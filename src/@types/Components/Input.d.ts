@@ -1,5 +1,6 @@
-interface InputT {
+interface InputT extends React.InputHTMLAttributes<HTMLInputElement> {
     label: string
-    inputAttribute: React.InputHTMLAttributes<HTMLInputElement>
+    id: string
+    name: string
     text?: string
 }
