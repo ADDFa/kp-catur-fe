@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { destroy, get } from "../Functions/Api"
+import { destroy, get, post } from "../Functions/Api"
 import FilterDate from "./Letters/FilterDate"
 import LinkOffsetHover from "../Components/LinkOffsetHover"
 import SelectFloating from "../Components/SelectFloating"
@@ -9,10 +9,15 @@ import ButtonDetail from "../Components/Buttons/ButtonDetail"
 import ButtonDelete from "../Components/Buttons/ButtonDelete"
 import { useParams } from "react-router-dom"
 import Toast from "../Components/Toast"
+import Modal from "../Components/Modal"
+import Input from "../Components/Input"
+import { gi } from "../Functions/GetElement"
+import Select from "../Components/Select"
 
 const Letter = () => {
     const { type } = useParams()
     const [letters, setLetters] = useState<ResponseT.DataT[]>()
+    const [users, setUsers] = useState<ResponseT.DataT[]>()
     const [take, setTake] = useState<number | string>(5)
     const [before, setBefore] = useState("")
     const [after, setAfter] = useState("")
@@ -26,9 +31,15 @@ const Letter = () => {
         if (res?.ok) setLetters(res.result.data)
     }, [take, before, after, type])
 
+    const getUsers = useCallback(async () => {
+        const res = await get("user")
+        setUsers(res?.result.data)
+    }, [])
+
     useEffect(() => {
         getLetters()
-    }, [getLetters])
+        getUsers()
+    }, [getLetters, getUsers])
 
     const changeTake: React.FormEventHandler<HTMLSelectElement> = (evt) => {
         setTake(evt.currentTarget.value)
@@ -46,6 +57,12 @@ const Letter = () => {
             })
             getLetters()
         }
+    }
+
+    const disposition = async () => {
+        const form = gi<HTMLFormElement>("disposition-form")
+        const res = await post("disposition", form)
+        console.log(res)
     }
 
     return (
@@ -105,29 +122,74 @@ const Letter = () => {
                     </thead>
                     <tbody>
                         {letters?.map(
-                            (
-                                {
-                                    letter: { type: jenis, number, id },
-                                    disposition_status
-                                },
-                                i
-                            ) => (
+                            ({ letter: { type: jenis, number, id } }, i) => (
                                 <tr key={i}>
                                     <th scope="col">{++i}</th>
                                     <td>{jenis}</td>
                                     <td>{number}</td>
                                     {type === "incoming" && (
                                         <td className="text-center">
-                                            <button
-                                                className={`btn btn-${
-                                                    disposition_status ===
-                                                    "process"
-                                                        ? "warning"
-                                                        : "success"
-                                                }`}
+                                            <Modal
+                                                id="disposition"
+                                                title="Disposisi"
+                                                onConfirmed={disposition}
+                                                buttonText={
+                                                    <i className="bi bi-send-fill text-light" />
+                                                }
+                                                buttonColor="warning"
                                             >
-                                                <i className="bi bi-send-fill text-light" />
-                                            </button>
+                                                <form
+                                                    id="disposition-form"
+                                                    className="text-start"
+                                                    onSubmit={(evt) =>
+                                                        evt.preventDefault()
+                                                    }
+                                                >
+                                                    <input
+                                                        type="hidden"
+                                                        name="incoming_letter_id"
+                                                        value={id}
+                                                    />
+                                                    <Select
+                                                        id="user_id"
+                                                        label="User"
+                                                        name="user_id"
+                                                        defaultValue="Pilih User"
+                                                    >
+                                                        {users?.map(
+                                                            (
+                                                                { id, name },
+                                                                i
+                                                            ) => {
+                                                                if (
+                                                                    name !==
+                                                                    "Admin"
+                                                                ) {
+                                                                    return (
+                                                                        <option
+                                                                            key={
+                                                                                i
+                                                                            }
+                                                                            value={
+                                                                                id
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                name
+                                                                            }
+                                                                        </option>
+                                                                    )
+                                                                }
+                                                            }
+                                                        )}
+                                                    </Select>
+                                                    <Input
+                                                        label="Pesan"
+                                                        id="message"
+                                                        name="message"
+                                                    />
+                                                </form>
+                                            </Modal>
                                         </td>
                                     )}
                                     <td className="d-flex justify-content-center gap-2">

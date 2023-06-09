@@ -5,13 +5,14 @@ const Modal: React.FC<ModalT> = ({
     title,
     confirmButtonText,
     cancelButtonText,
-    onConfirmed
+    onConfirmed,
+    buttonColor
 }) => {
     return (
         <>
             <button
                 type="button"
-                className="btn btn-primary"
+                className={`btn btn-${buttonColor || "primary"}`}
                 data-bs-toggle="modal"
                 data-bs-target={`#${id}`}
             >

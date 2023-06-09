@@ -75,6 +75,20 @@ const checkToken = async (): Promise<boolean> => {
     })
 }
 
+export const createForm = (
+    method: "POST" | "PUT" | "DELETE",
+    formChild: { key: string; value: string }[]
+): FormData => {
+    const body = new FormData(document.createElement("form"))
+    body.append("_method", method)
+
+    formChild.map(({ key, value }) => {
+        body.append(key, value)
+    })
+
+    return body
+}
+
 export const get = async (path: string) => {
     return await handleRequest(path, { method: "GET" })
 }
@@ -100,15 +114,8 @@ export const destroy = async (
     path: string,
     ...formChild: { key: string; value: string }[]
 ) => {
-    const body = new FormData(document.createElement("form"))
-    body.append("_method", "DELETE")
-
-    formChild.map(({ key, value }) => {
-        body.append(key, value)
-    })
-
     return await handleRequest(path, {
         method: "POST",
-        body
+        body: createForm("DELETE", formChild)
     })
 }

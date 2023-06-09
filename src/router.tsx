@@ -11,6 +11,7 @@ const Setting = lazy(() => import("./Pages/Setting"))
 const CreateLetter = lazy(() => import("./Pages/Letters/CreateLetter"))
 const DetailLetter = lazy(() => import("./Pages/Letters/DetailLetter"))
 const UpdateLetter = lazy(() => import("./Pages/Letters/UpdateLetter"))
+const Disposition = lazy(() => import("./Pages/Disposition"))
 const Report = lazy(() => import("./Pages/Report"))
 const PrintReport = lazy(() => import("./Pages/Letters/PrintReport"))
 
@@ -93,6 +94,14 @@ const router = createBrowserRouter([
                 element: (
                     <Suspense>
                         <EditUser />
+                    </Suspense>
+                )
+            },
+            {
+                path: "disposition",
+                element: (
+                    <Suspense>
+                        <Disposition />
                     </Suspense>
                 )
             },

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 
-const SidebarList = ({ to, icon, text }: SidebarListT) => {
+const SidebarList = ({ to, children, text }: SidebarListT) => {
     const navigate = useNavigate()
 
     const navigateTo = (evt: React.MouseEvent<HTMLLIElement>) => {
@@ -10,7 +10,7 @@ const SidebarList = ({ to, icon, text }: SidebarListT) => {
 
     return (
         <li onClick={navigateTo} data-navigate={to}>
-            {icon}
+            {children}
             <p className="my-auto">{text}</p>
         </li>
     )

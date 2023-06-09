@@ -4,6 +4,8 @@ import { post } from "./Functions/Api"
 import "./App.css"
 import logo from "./Assets/logo.png"
 import Auth from "./Functions/Auth"
+import { useEffect } from "react"
+import { el } from "./Functions/GetElement"
 
 export const appLoader = () => {
     return localStorage.getItem("token_access") ? redirect("/dashboard") : null
@@ -34,8 +36,13 @@ export const App = () => {
         style.opacity = "1"
     }
 
+    useEffect(() => {
+        const body = el("body") as HTMLBodyElement
+        body.style.backgroundColor = "#92FF92"
+    }, [])
+
     return (
-        <div className="col-md-4 container mt-5 p-3 shadow-lg rounded-3">
+        <div className="col-md-4 container mt-5 p-3 shadow-lg rounded-3 bg-light">
             <form onSubmit={login}>
                 <div className="d-flex flex-column justify-content-center gap-1 mb-5">
                     <img
@@ -45,6 +52,8 @@ export const App = () => {
                         width={70}
                     />
                     <h4 className="fw-bold mt-3 text-center">
+                        SISTEM PENGELOLAAN ARSIP SURAT
+                        <br />
                         SMAN 9 KOTA BENGKULU
                     </h4>
                 </div>
