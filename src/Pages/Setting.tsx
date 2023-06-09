@@ -2,18 +2,18 @@ import Input from "../Components/Input"
 import Toast from "../Components/Toast"
 
 const Setting = () => {
-    const login = async (form: HTMLFormElement) => {
-        // const res = await handleRequest("post", "login", form)
-        // if (!res) return false
+    // const login = async (form: HTMLFormElement) => {
+    //     // const res = await handleRequest("post", "login", form)
+    //     // if (!res) return false
 
-        // setAuth(res.result.data)
-        return true
-    }
+    //     // setAuth(res.result.data)
+    //     return true
+    // }
 
     const save = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
 
-        const form = evt.currentTarget
+        // const form = evt.currentTarget
 
         // const res = await handleRequest("put", "account", form)
         // const isLogin = await login(form)

@@ -113,7 +113,7 @@ const Letter = () => {
                                 i
                             ) => (
                                 <tr key={i}>
-                                    <td scope="col">{++i}</td>
+                                    <th scope="col">{++i}</th>
                                     <td>{jenis}</td>
                                     <td>{number}</td>
                                     {type === "incoming" && (

@@ -23,6 +23,7 @@ const CreateUser = () => {
         evt.preventDefault()
 
         const res = await post("user", evt.currentTarget)
+        console.log(res)
         if (!res?.ok) return
 
         Toast.fire({

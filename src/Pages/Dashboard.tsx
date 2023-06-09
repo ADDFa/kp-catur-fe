@@ -32,8 +32,10 @@ const Dashboard = () => {
                 })
             }
 
-            const incomingLetters = await get("letter/incoming")
-            const outgoingLetters = await get("letter/outgoing")
+            const getPath = (type: string) =>
+                `letter/${type}?before=${now}&after=${now}`
+            const incomingLetters = await get(getPath("incoming"))
+            const outgoingLetters = await get(getPath("outgoing"))
             setIncomingLetters(incomingLetters?.result.data)
             setOutgoingLetters(outgoingLetters?.result.data)
         }

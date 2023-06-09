@@ -6,6 +6,7 @@ const Input = ({ label, text, id, name, ...rest }: InputT) => {
             </label>
             <input
                 {...rest}
+                id={id}
                 name={name}
                 className="form-control"
                 aria-describedby={`${id}Help`}
