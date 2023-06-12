@@ -1,23 +1,37 @@
+import { useEffect, useState } from "react"
 import Input from "../Components/Input"
+import { get, put } from "../Functions/Api"
+import usePayload from "../Hooks/usePayload"
 import Toast from "../Components/Toast"
+import Auth from "../Functions/Auth"
 
 const Setting = () => {
-    // const login = async (form: HTMLFormElement) => {
-    //     // const res = await handleRequest("post", "login", form)
-    //     // if (!res) return false
+    const [credential, setCredential] = useState<ResponseT.DataT>()
+    const {
+        user: { id }
+    } = usePayload()
 
-    //     // setAuth(res.result.data)
-    //     return true
-    // }
+    useEffect(() => {
+        const getUser = async () => {
+            const res = await get(`account/${id}`)
+            if (res?.ok) setCredential(res.result.data.credential)
+        }
+
+        getUser()
+    }, [id])
 
     const save = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault()
 
-        // const form = evt.currentTarget
+        const res = await put(
+            `account/${credential?.username || ""}`,
+            evt.currentTarget
+        )
+        if (!res?.ok) return
 
-        // const res = await handleRequest("put", "account", form)
-        // const isLogin = await login(form)
-        // if (!res && !isLogin) return
+        const { token_access, token_refresh } = res.result.data
+        Auth.token_access = token_access
+        Auth.token_refresh = token_refresh
 
         Toast.fire({
             icon: "success",
@@ -35,6 +49,7 @@ const Setting = () => {
                     id="username"
                     name="username"
                     type="text"
+                    defaultValue={credential?.username}
                 />
                 <Input
                     label="Password"
