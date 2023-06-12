@@ -83,7 +83,7 @@ export const createForm = (
     body.append("_method", method)
 
     formChild.map(({ key, value }) => {
-        body.append(key, value)
+        return body.append(key, value)
     })
 
     return body
@@ -117,5 +117,11 @@ export const destroy = async (
     return await handleRequest(path, {
         method: "POST",
         body: createForm("DELETE", formChild)
+    })
+}
+
+export const patch = async (path: string) => {
+    return await handleRequest(path, {
+        method: "PATCH"
     })
 }

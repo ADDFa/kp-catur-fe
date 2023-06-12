@@ -2,19 +2,8 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import toCapitalize from "../../Functions/ToCapitalize"
 import { get } from "../../Functions/Api"
-
-const Ul = ({ children }: DetailLetter.UlT) => {
-    return <ul className="list-group list-group-flush col">{children}</ul>
-}
-
-const Li = ({ label, value }: DetailLetter.LiT) => {
-    return (
-        <li className="list-group-item p-0 mb-5">
-            <h5 className="fs-6">{label}</h5>
-            <p>{value}</p>
-        </li>
-    )
-}
+import Ul from "../Components/Ul"
+import Li from "../Components/Li"
 
 const DetailLetter = () => {
     const [letter, setLetter] = useState<ResponseT.DataT>()
@@ -40,27 +29,24 @@ const DetailLetter = () => {
                         <Ul>
                             <Li
                                 label="Nomor Surat"
-                                value={letter.letter.number}
+                                text={letter.letter.number}
                             />
-                            <Li
-                                label="Jenis Surat"
-                                value={letter.letter.type}
-                            />
+                            <Li label="Jenis Surat" text={letter.letter.type} />
                         </Ul>
                         <Ul>
                             <Li
                                 label="Perihal"
-                                value={letter.letter.regarding}
+                                text={letter.letter.regarding}
                             />
                             {type === "incoming" ? (
                                 <Li
                                     label="Pengirim"
-                                    value={toCapitalize(letter.sender)}
+                                    text={toCapitalize(letter.sender)}
                                 />
                             ) : (
                                 <Li
                                     label="Tujuan"
-                                    value={toCapitalize(letter.destination)}
+                                    text={toCapitalize(letter.destination)}
                                 />
                             )}
                         </Ul>

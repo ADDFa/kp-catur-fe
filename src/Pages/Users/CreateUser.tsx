@@ -62,11 +62,15 @@ const CreateUser = () => {
                             name="role"
                             defaultValue="Pilih Jabatan"
                         >
-                            {roles?.map(({ role, id }, i) => (
-                                <option value={id} key={i}>
-                                    {role}
-                                </option>
-                            ))}
+                            {roles?.map(({ role, id }, i) => {
+                                return role !== "Operator" ? (
+                                    <option value={id} key={i}>
+                                        {role}
+                                    </option>
+                                ) : (
+                                    ""
+                                )
+                            })}
                         </Select>
                         <Input
                             id="password"

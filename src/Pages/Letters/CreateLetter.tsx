@@ -113,7 +113,7 @@ const CreateLetter = () => {
                 </div>
                 <div className="d-flex justify-content-end gap-2 mt-5">
                     <button className="btn btn-primary">Simpan</button>
-                    <Link className="btn btn-warning" to={`/letter`}>
+                    <Link className="btn btn-warning" to={`/letter/${type}`}>
                         Kembali
                     </Link>
                 </div>

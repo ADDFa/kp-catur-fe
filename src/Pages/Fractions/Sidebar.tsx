@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import SidebarList from "../Components/SidebarList"
 import { el } from "../../Functions/GetElement"
+import usePayload from "../../Hooks/usePayload"
 
 export const setSidebarActive = (dataNavigate: string) => {
     let sidebarElement = el(`#sidebar [data-navigate="${dataNavigate}"]`)
@@ -16,6 +17,8 @@ export const setSidebarActive = (dataNavigate: string) => {
 }
 
 const Sidebar = () => {
+    const payload = usePayload()
+
     useEffect(() => {
         setSidebarActive(window.location.pathname)
     }, [])
@@ -29,9 +32,11 @@ const Sidebar = () => {
                 <SidebarList to="/letter/incoming" text="Surat">
                     <i className="bi bi-file-text-fill" />
                 </SidebarList>
-                <SidebarList to="/user" text="Pengguna">
-                    <i className="bi bi-people-fill" />
-                </SidebarList>
+                {payload.user.role.role === "Operator" && (
+                    <SidebarList to="/user" text="Pengguna">
+                        <i className="bi bi-people-fill" />
+                    </SidebarList>
+                )}
                 <SidebarList to="/disposition" text="Disposisi">
                     <i className="bi bi-mailbox" />
                 </SidebarList>

@@ -9,9 +9,8 @@ import ButtonDetail from "../Components/Buttons/ButtonDetail"
 import ButtonDelete from "../Components/Buttons/ButtonDelete"
 import { useParams } from "react-router-dom"
 import Toast from "../Components/Toast"
-import Modal from "../Components/Modal"
 import Input from "../Components/Input"
-import { gi } from "../Functions/GetElement"
+import { el, gi } from "../Functions/GetElement"
 import Select from "../Components/Select"
 
 const Letter = () => {
@@ -21,6 +20,7 @@ const Letter = () => {
     const [take, setTake] = useState<number | string>(5)
     const [before, setBefore] = useState("")
     const [after, setAfter] = useState("")
+    const [incomingLetterId, setIncomingLetterId] = useState<number>(0)
 
     const getLetters = useCallback(async () => {
         let path = `letter/${type}?take=${take}`
@@ -33,7 +33,7 @@ const Letter = () => {
 
     const getUsers = useCallback(async () => {
         const res = await get("user")
-        setUsers(res?.result.data)
+        if (res?.ok) setUsers(res.result.data)
     }, [])
 
     useEffect(() => {
@@ -62,7 +62,22 @@ const Letter = () => {
     const disposition = async () => {
         const form = gi<HTMLFormElement>("disposition-form")
         const res = await post("disposition", form)
-        console.log(res)
+
+        if (!res?.ok) return
+
+        getLetters()
+        el<HTMLButtonElement>(".btn-close").click()
+        Toast.fire({
+            icon: "success",
+            text: "Surat Berhasil Didisposisikan"
+        })
+    }
+
+    const getBtnColor = (status: string): ButtonColorT => {
+        if (status === "process") return "warning"
+        if (status === "finish") return "success"
+
+        return "secondary"
     }
 
     return (
@@ -122,74 +137,36 @@ const Letter = () => {
                     </thead>
                     <tbody>
                         {letters?.map(
-                            ({ letter: { type: jenis, number, id } }, i) => (
+                            (
+                                {
+                                    letter: { type: jenis, number, id },
+                                    disposition_status
+                                },
+                                i
+                            ) => (
                                 <tr key={i}>
                                     <th scope="col">{++i}</th>
                                     <td>{jenis}</td>
                                     <td>{number}</td>
                                     {type === "incoming" && (
                                         <td className="text-center">
-                                            <Modal
-                                                id="disposition"
-                                                title="Disposisi"
-                                                onConfirmed={disposition}
-                                                buttonText={
-                                                    <i className="bi bi-send-fill text-light" />
+                                            <button
+                                                type="button"
+                                                className={`btn btn-${getBtnColor(
+                                                    disposition_status
+                                                )}`}
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#disposition"
+                                                disabled={
+                                                    disposition_status ===
+                                                    "finish"
                                                 }
-                                                buttonColor="warning"
+                                                onClick={() =>
+                                                    setIncomingLetterId(id)
+                                                }
                                             >
-                                                <form
-                                                    id="disposition-form"
-                                                    className="text-start"
-                                                    onSubmit={(evt) =>
-                                                        evt.preventDefault()
-                                                    }
-                                                >
-                                                    <input
-                                                        type="hidden"
-                                                        name="incoming_letter_id"
-                                                        value={id}
-                                                    />
-                                                    <Select
-                                                        id="user_id"
-                                                        label="User"
-                                                        name="user_id"
-                                                        defaultValue="Pilih User"
-                                                    >
-                                                        {users?.map(
-                                                            (
-                                                                { id, name },
-                                                                i
-                                                            ) => {
-                                                                if (
-                                                                    name !==
-                                                                    "Admin"
-                                                                ) {
-                                                                    return (
-                                                                        <option
-                                                                            key={
-                                                                                i
-                                                                            }
-                                                                            value={
-                                                                                id
-                                                                            }
-                                                                        >
-                                                                            {
-                                                                                name
-                                                                            }
-                                                                        </option>
-                                                                    )
-                                                                }
-                                                            }
-                                                        )}
-                                                    </Select>
-                                                    <Input
-                                                        label="Pesan"
-                                                        id="message"
-                                                        name="message"
-                                                    />
-                                                </form>
-                                            </Modal>
+                                                <i className="bi bi-send-fill text-light" />
+                                            </button>
                                         </td>
                                     )}
                                     <td className="d-flex justify-content-center gap-2">
@@ -208,6 +185,85 @@ const Letter = () => {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            <div
+                className="modal fade"
+                id="disposition"
+                tabIndex={-1}
+                aria-labelledby="dispositionLabel"
+                aria-hidden="true"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1
+                                className="modal-title fs-5"
+                                id="dispositionLabel"
+                            >
+                                Modal title
+                            </h1>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        <div className="modal-body">
+                            <form
+                                id="disposition-form"
+                                className="text-start"
+                                onSubmit={(evt) => evt.preventDefault()}
+                            >
+                                <input
+                                    type="hidden"
+                                    name="incoming_letter_id"
+                                    value={incomingLetterId}
+                                />
+                                <Select
+                                    id="user_id"
+                                    label="User"
+                                    name="user_id"
+                                    defaultValue="Pilih User"
+                                >
+                                    {users?.map(
+                                        ({ id, role: { role }, name }, i) => {
+                                            return role !== "Operator" ? (
+                                                <option key={i} value={id}>
+                                                    {name}
+                                                </option>
+                                            ) : (
+                                                ""
+                                            )
+                                        }
+                                    )}
+                                </Select>
+                                <Input
+                                    label="Pesan"
+                                    id="message"
+                                    name="message"
+                                />
+                            </form>
+                        </div>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={disposition}
+                            >
+                                Disposisikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )

@@ -2,6 +2,7 @@ const Modal: React.FC<ModalT> = ({
     children,
     id,
     buttonText,
+    buttonProps,
     title,
     confirmButtonText,
     cancelButtonText,
@@ -15,6 +16,7 @@ const Modal: React.FC<ModalT> = ({
                 className={`btn btn-${buttonColor || "primary"}`}
                 data-bs-toggle="modal"
                 data-bs-target={`#${id}`}
+                {...buttonProps}
             >
                 {buttonText}
             </button>
