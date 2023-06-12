@@ -1,7 +1,7 @@
 import Auth from "./Auth"
 import { showError } from "./ShowResponseErrors"
 
-const BASE_API = "http://127.0.0.1:8000/api"
+const BASE_API = "https://sipemulu.000webhostapp.com/api"
 
 const fetchingData = async (path: string, init: RequestInit) => {
     return new Promise<Response>((resolve, reject) => {
