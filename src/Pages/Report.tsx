@@ -58,13 +58,13 @@ const Report = () => {
                             id="after"
                             name="after"
                             type="date"
-                            label="Tanggal Akhir"
+                            label="Dari Tanggal"
                         />
                         <Input
                             id="before"
                             name="before"
                             type="date"
-                            label="Tanggal Awal"
+                            label="Hingga Tanggal"
                         />
                     </div>
                 </Modal>

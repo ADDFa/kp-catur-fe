@@ -11,6 +11,7 @@ const Setting = lazy(() => import("./Pages/Setting"))
 const CreateLetter = lazy(() => import("./Pages/Letters/CreateLetter"))
 const DetailLetter = lazy(() => import("./Pages/Letters/DetailLetter"))
 const UpdateLetter = lazy(() => import("./Pages/Letters/UpdateLetter"))
+const ShowLetterFile = lazy(() => import("./Pages/Letters/ShowLetterFile"))
 
 const Disposition = lazy(() => import("./Pages/Disposition"))
 const DetailDisposition = lazy(() => import("./Pages/Disposition/Show"))
@@ -36,6 +37,14 @@ const router = createBrowserRouter([
             </Suspense>
         ),
         children: [
+            {
+                path: "letter/file",
+                element: (
+                    <Suspense>
+                        <ShowLetterFile />
+                    </Suspense>
+                )
+            },
             {
                 path: "dashboard",
                 element: (

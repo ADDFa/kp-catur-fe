@@ -1,14 +1,25 @@
-import { Link, useParams } from "react-router-dom"
-import { get, patch } from "../../Functions/Api"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { get, patch, post } from "../../Functions/Api"
 import Li from "../Components/Li"
 import Ul from "../Components/Ul"
 import { useEffect, useState } from "react"
 import ConfirmDialog from "../../Components/ConfirmDialog"
 import Toast from "../../Components/Toast"
+import usePayload from "../../Hooks/usePayload"
+import Modal from "../../Components/Modal"
+import Select from "../../Components/Select"
+import { el } from "../../Functions/GetElement"
+import useFormBuilder from "../../Hooks/useFormBuilder"
 
 const Show: React.FC = () => {
+    const formBuilder = useFormBuilder()
     const [disposition, setDisposition] = useState<ResponseT.DataT>()
+    const [users, setUsers] = useState<ResponseT.DataT[]>()
+    const {
+        user: { role }
+    } = usePayload()
     const { id } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getDisposition = async () => {
@@ -16,6 +27,12 @@ const Show: React.FC = () => {
             if (res?.ok) setDisposition(res.result)
         }
 
+        const getUser = async () => {
+            const res = await get(`user`)
+            setUsers(res?.result.data)
+        }
+
+        getUser()
         getDisposition()
     }, [id])
 
@@ -25,10 +42,9 @@ const Show: React.FC = () => {
                 const res = await patch(`disposition/${id}`)
                 if (!res?.ok) return
 
-                if (disposition) {
-                    disposition.incoming_letter.disposition_status =
-                        res.result.disposition_status
-                }
+                const disposition = await get(`disposition/${id}`)
+                if (disposition?.ok) setDisposition(disposition.result)
+
                 Toast.fire({
                     icon: "success",
                     text: "Disposisi Diselesaikan!"
@@ -42,6 +58,36 @@ const Show: React.FC = () => {
                 timer: 0
             }
         )
+    }
+
+    const keepOnDisposition = async () => {
+        const user = el("#keep-on-disposition #user") as HTMLSelectElement
+        const btnClose = el(
+            "#keep-on-disposition .btn-close"
+        ) as HTMLButtonElement
+        const form = formBuilder(
+            {
+                key: "user_id",
+                value: user.value
+            },
+            {
+                key: "disposition_id",
+                value: id || ""
+            }
+        )
+
+        const res = await post("disposition/next", form)
+        if (res?.ok) {
+            Toast.fire({
+                icon: "success",
+                text: "Berhasil meneruskan disposisi"
+            })
+            btnClose.click()
+
+            setTimeout(() => {
+                navigate("/disposition")
+            }, 400)
+        }
     }
 
     return (
@@ -80,21 +126,62 @@ const Show: React.FC = () => {
                         </Ul>
 
                         <div className="d-flex justify-content-end gap-3">
-                            <button
-                                className="btn btn-success"
-                                onClick={dispositionFinish}
-                                disabled={
-                                    disposition.incoming_letter
-                                        .disposition_status === "finish"
-                                }
-                            >
-                                Tandai Selesai
-                            </button>
-                            {disposition.incoming_letter.disposition_status ===
-                                "process" && (
-                                <button className="btn btn-warning text-light">
-                                    Teruskan Disposisi
-                                </button>
+                            {role.role !== "Operator" && (
+                                <>
+                                    <button
+                                        className="btn btn-success"
+                                        onClick={dispositionFinish}
+                                        disabled={
+                                            disposition.incoming_letter
+                                                .disposition_status === "finish"
+                                        }
+                                    >
+                                        Tandai Selesai
+                                    </button>
+                                    {disposition.incoming_letter
+                                        .disposition_status === "process" && (
+                                        <Modal
+                                            id="keep-on-disposition"
+                                            buttonText="Teruskan Disposisi"
+                                            onConfirmed={keepOnDisposition}
+                                            title="Diposisikan Kepada"
+                                            buttonColor="warning"
+                                        >
+                                            <Select
+                                                id="user"
+                                                name="user"
+                                                label="Pilih Pengguna"
+                                            >
+                                                {users &&
+                                                    users.map(
+                                                        ({
+                                                            name,
+                                                            id,
+                                                            role: {
+                                                                role: roleUser
+                                                            }
+                                                        }) => {
+                                                            if (
+                                                                roleUser ===
+                                                                "Operator"
+                                                            ) {
+                                                                return null
+                                                            }
+
+                                                            return (
+                                                                <option
+                                                                    value={id}
+                                                                    key={id}
+                                                                >
+                                                                    {name}
+                                                                </option>
+                                                            )
+                                                        }
+                                                    )}
+                                            </Select>
+                                        </Modal>
+                                    )}
+                                </>
                             )}
                             <Link
                                 to={"/disposition"}

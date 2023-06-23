@@ -32,6 +32,22 @@ const DetailLetter = () => {
                                 text={letter.letter.number}
                             />
                             <Li label="Jenis Surat" text={letter.letter.type} />
+                            {type === "incoming" && (
+                                <li className="list-group-item p-0 mb-5">
+                                    <h5 className="fs-6">File Surat</h5>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <span className="text-success">
+                                            {letter.letter.number}.pdf
+                                        </span>
+                                        <Link
+                                            to={`/letter/file?file_name=${letter?.letter_image}`}
+                                            className="btn btn-success"
+                                        >
+                                            Lihat
+                                        </Link>
+                                    </div>
+                                </li>
+                            )}
                         </Ul>
                         <Ul>
                             <Li

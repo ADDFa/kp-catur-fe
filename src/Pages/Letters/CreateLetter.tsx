@@ -69,6 +69,13 @@ const CreateLetter = () => {
                             name="regarding"
                             placeholder="HUT SMAN 9"
                         />
+                        <Input
+                            label="Tanggal Surat"
+                            type="date"
+                            id="date"
+                            name="date"
+                            defaultValue="2023-06-18"
+                        />
                     </div>
                     <div className="col-md-6">
                         <Select

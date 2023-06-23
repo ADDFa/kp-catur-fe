@@ -26,7 +26,6 @@ const UpdateLetter = () => {
         evt.preventDefault()
 
         const res = await put(`letter/${id}`, evt.currentTarget)
-        console.log(res)
         if (!res?.ok) return
 
         Toast.fire({
@@ -69,6 +68,15 @@ const UpdateLetter = () => {
                                 id="regarding"
                                 name="regarding"
                                 defaultValue={letter?.letter.regarding}
+                            />
+                            <Input
+                                label="Tanggal Surat"
+                                type="date"
+                                id="date"
+                                name="date"
+                                defaultValue={
+                                    letter?.letter.date || `2023-06-18`
+                                }
                             />
                         </div>
                         <div className="col-md-6">

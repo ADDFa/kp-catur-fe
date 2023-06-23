@@ -34,6 +34,10 @@ const PrintReport = () => {
         evt.currentTarget.classList.remove("d-none")
     }
 
+    const getDispositionStatus = (status: string | null) => {
+        return status === "selesai" ? "Selesai" : "Proses"
+    }
+
     return (
         <>
             <div className="container-fluid my-5">
@@ -94,9 +98,9 @@ const PrintReport = () => {
                                         <td>{regarding}</td>
                                         <td>{sender}</td>
                                         <td>
-                                            {disposition_status === "process"
-                                                ? "Proses"
-                                                : "Selesai"}
+                                            {getDispositionStatus(
+                                                disposition_status
+                                            )}
                                         </td>
                                     </tr>
                                 )
