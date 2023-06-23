@@ -85,7 +85,7 @@ const Report = () => {
                         {incomingLetters?.map(
                             ({ letter: { number, type } }, i) => (
                                 <tr key={i}>
-                                    <td scope="col">{++i}</td>
+                                    <th scope="col">{++i}</th>
                                     <td>{type}</td>
                                     <td>{number}</td>
                                 </tr>
@@ -109,7 +109,7 @@ const Report = () => {
                         {outgoingLetters?.map(
                             ({ letter: { number, type } }, i) => (
                                 <tr key={i}>
-                                    <td scope="col">{++i}</td>
+                                    <th scope="col">{++i}</th>
                                     <td>{type}</td>
                                     <td>{number}</td>
                                 </tr>

@@ -89,7 +89,7 @@ const User = () => {
                 <tbody>
                     {users?.map(({ id, name, role: { role } }, i) => (
                         <tr key={i}>
-                            <td scope="col">{++i}</td>
+                            <th scope="col">{++i}</th>
                             <td>{name}</td>
                             <td>{role}</td>
                             <td className="d-flex gap-2 justify-content-center">

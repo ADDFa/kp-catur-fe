@@ -26,7 +26,7 @@ const PrintReport = () => {
         }
 
         getReport()
-    }, [])
+    }, [location.search])
 
     const print: React.MouseEventHandler<HTMLButtonElement> = (evt) => {
         evt.currentTarget.classList.add("d-none")

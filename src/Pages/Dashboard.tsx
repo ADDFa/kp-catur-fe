@@ -81,7 +81,7 @@ const Dashboard = () => {
                         {incomingLetters?.map(
                             ({ letter: { number, type } }, i) => (
                                 <tr key={i}>
-                                    <td scope="row">{++i}</td>
+                                    <th scope="row">{++i}</th>
                                     <td>{type}</td>
                                     <td>{number}</td>
                                 </tr>
@@ -92,7 +92,7 @@ const Dashboard = () => {
                         {outgoingLetters?.map(
                             ({ letter: { number, type } }, i) => (
                                 <tr key={i}>
-                                    <td scope="row">{++i}</td>
+                                    <th scope="row">{++i}</th>
                                     <td>{type}</td>
                                     <td>{number}</td>
                                 </tr>

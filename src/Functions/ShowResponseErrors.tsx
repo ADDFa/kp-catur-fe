@@ -22,7 +22,7 @@ const showResponseErrors = (errors: Record<string, string[]>) => {
         const events = ["change", "keypress"]
 
         events.map((event) => {
-            elementError.addEventListener(event, (evt) => {
+            return elementError.addEventListener(event, (evt) => {
                 const target = evt.currentTarget as HTMLElement
                 if (target.classList.contains("is-invalid")) {
                     target.classList.remove("is-invalid")

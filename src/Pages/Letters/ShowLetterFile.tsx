@@ -23,7 +23,7 @@ const ShowLetterFile = () => {
         }
 
         getFile()
-    }, [])
+    }, [fileName])
 
     return (
         <embed
